@@ -1,0 +1,1755 @@
+- id: '1760724910302'
+  alias: 'Vaatwasser: Plannen en Starten'
+  description: Berekent eenmalig de starttijd bij aanzetten knop en voert daarna de
+    start-acties uit
+  triggers:
+  - trigger: state
+    entity_id: input_boolean.vaatwassergevuld
+    to: 'on'
+    id: plannen
+  - trigger: time
+    at: input_datetime.vaatwasser_geplande_starttijd
+    id: starten
+  - trigger: numeric_state
+    entity_id: sensor.solax_huis_now
+    above: 1500
+    for:
+      minutes: 2
+    id: starten
+  conditions:
+  - condition: state
+    entity_id: input_boolean.vaatwassergevuld
+    state: 'on'
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: select.012030387010009525_programs
+      state: unavailable
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: plannen
+      sequence:
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.vaatwasser_geplande_starttijd
+        data:
+          timestamp: "{% set p = state_attr('sensor.tibber_forecast_prices', 'prices')
+            %} {% if p is not none and p | length > 0 %}\n  {% set is_eco = is_state('input_boolean.vaatwasserecoprog',
+            'on') %}\n  {% set duur = 5 if is_eco else 1 %}\n  {% set start_venster
+            = now() %}\n  {% set eind_venster = start_venster + timedelta(hours=12)
+            %}\n  {% set relevante_prijzen = p | selectattr('start_time', 'defined')\n
+            \                             | map(attribute='start_time')\n                              |
+            map('as_datetime')\n                              | select('gt', start_venster)\n
+            \                             | select('lt', eind_venster)\n                              |
+            list %}\n  {% set ns = namespace(laagste_prijs=999, beste_start=now())
+            %}\n  {% for start_tijd in relevante_prijzen %}\n    {% set eind_tijd
+            = start_tijd + timedelta(hours=duur) %}\n    {% set ns_blok = namespace(totaal=0,
+            aantal=0) %}\n    {% for prijs_punt in p %}\n      {% set pt = as_datetime(prijs_punt.start_time)
+            %}\n      {% if pt >= start_tijd and pt < eind_tijd %}\n        {% set
+            ns_blok.totaal = ns_blok.totaal + prijs_punt.price %}\n        {% set
+            ns_blok.aantal = ns_blok.aantal + 1 %}\n      {% endif %}\n    {% endfor
+            %}\n    {% if ns_blok.aantal >= (duur | int) %}\n      {% set gemiddelde
+            = ns_blok.totaal / ns_blok.aantal %}\n      {% if gemiddelde < ns.laagste_prijs
+            %}\n        {% set ns.laagste_prijs = gemiddelde %}\n        {% set ns.beste_start
+            = start_tijd %}\n      {% endif %}\n    {% endif %}\n  {% endfor %}\n
+            \ {{ as_timestamp(ns.beste_start) }}\n{% else %}\n  {{ as_timestamp(now())
+            }}\n{% endif %}\n"
+    - conditions:
+      - condition: trigger
+        id: starten
+      sequence:
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: input_boolean.vaatwassersnelprog
+            state: 'on'
+          sequence:
+          - action: select.select_option
+            target:
+              entity_id: select.012030387010009525_programs
+            data:
+              option: Dishcare.Dishwasher.Program.Quick65
+          - delay:
+              seconds: 5
+          - action: home_connect_alt.start_program
+            data:
+              device_id: fcacf0066c1b53d2b1bcb4a94d63ec60
+              program_key: Dishcare.Dishwasher.Program.Quick65
+              options: []
+        - conditions:
+          - condition: state
+            entity_id: input_boolean.vaatwasserecoprog
+            state: 'on'
+          sequence:
+          - action: select.select_option
+            target:
+              entity_id: select.012030387010009525_programs
+            data:
+              option: Dishcare.Dishwasher.Program.Eco50
+          - delay:
+              seconds: 5
+          - action: home_connect_alt.start_program
+            data:
+              device_id: fcacf0066c1b53d2b1bcb4a94d63ec60
+              program_key: Dishcare.Dishwasher.Program.Eco50
+              options: []
+      - action: input_boolean.turn_off
+        target:
+          entity_id:
+          - input_boolean.vaatwassergevuld
+          - input_boolean.vaatwassersnelprog
+          - input_boolean.vaatwasserecoprog
+- id: '1760887001057'
+  alias: 'Vaatwasser: bericht gestart'
+  description: ''
+  triggers:
+  - device_id: fcacf0066c1b53d2b1bcb4a94d63ec60
+    domain: home_connect_alt
+    type: program_started
+    trigger: device
+  conditions: []
+  actions:
+  - action: telegram_bot.send_message
+    metadata: {}
+    data:
+      config_entry_id: 01K07Q4BWNVF9FKK82NGMHYPEC
+      message: Vaatwasser is gestart
+      title: Bericht vaatwasser
+      chat_id:
+      - '-1001731338740'
+      message_thread_id: '44275'
+  mode: single
+- id: '1760887048905'
+  alias: 'Vaatwasser: bericht gestopt'
+  description: ''
+  triggers:
+  - device_id: fcacf0066c1b53d2b1bcb4a94d63ec60
+    domain: home_connect_alt
+    type: program_finished
+    trigger: device
+  conditions: []
+  actions:
+  - action: telegram_bot.send_message
+    metadata: {}
+    data:
+      config_entry_id: 01K07Q4BWNVF9FKK82NGMHYPEC
+      message: Vaatwasser is klaar
+      title: Bericht vaatwasser
+      chat_id:
+      - '-1001731338740'
+      message_thread_id: '44275'
+  - action: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.vaatwassergevuld
+    data: {}
+  mode: single
+- id: '1760887958816'
+  alias: 'Wasmachine: bericht gestopt'
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - select.wasmachine
+    from: run
+    to: stop
+  conditions: []
+  actions:
+  - action: telegram_bot.send_message
+    metadata: {}
+    data:
+      config_entry_id: 01K07Q4BWNVF9FKK82NGMHYPEC
+      message: Wasmachine is klaar
+      title: Wasmachine
+      chat_id:
+      - '-1001731338740'
+      message_thread_id: '44275'
+  mode: single
+- id: '1760888213379'
+  alias: 'Wasmachine: bericht gestart'
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - select.wasmachine
+    from: stop
+    to: run
+  conditions: []
+  actions:
+  - action: telegram_bot.send_message
+    metadata: {}
+    data:
+      config_entry_id: 01K07Q4BWNVF9FKK82NGMHYPEC
+      message: Wasmachine is gestart
+      title: Wasmachine
+      chat_id:
+      - '-1001731338740'
+      message_thread_id: '44275'
+  mode: single
+- id: '1763741081020'
+  alias: Buitenverlichting standaard
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - sun.sun
+    from:
+    - above_horizon
+    to:
+    - below_horizon
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+  conditions:
+  - alias: Datum geen sinterklaas,kerst,nieuwjaar
+    condition: template
+    value_template: '{{ not(
+
+      now().month == 12 and now().day == 5
+
+      or now().month == 12 and now().day == 6
+
+      or (now().month == 12 and now().day >= 23
+
+      and now().month == 12 and now().day < 27)
+
+      or now().month == 12 and now().day == 31
+
+      )
+
+      }} '
+  actions:
+  - action: light.turn_on
+    metadata: {}
+    data:
+      color_temp_kelvin: 2204
+      brightness_pct: 60
+    target:
+      entity_id: light.buiten_lichten
+  mode: single
+- id: '1763741539574'
+  alias: Buitenverlichting sinterklaas
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - sun.sun
+    from:
+    - above_horizon
+    to:
+    - below_horizon
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+  conditions:
+  - alias: Datum = sinterklaas
+    condition: template
+    value_template: '{{
+
+      now().month == 12 and now().day == 5
+
+      or now().month == 12 and now().day == 6
+
+      }} '
+  actions:
+  - action: light.turn_on
+    metadata: {}
+    data:
+      brightness_pct: 25
+      rgb_color:
+      - 255
+      - 0
+      - 0
+    target:
+      entity_id: light.buiten_lichten
+    alias: Licht op rood zetten
+  mode: single
+- id: '1763741653554'
+  alias: Buitenverlichting kerst
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - sun.sun
+    from:
+    - above_horizon
+    to:
+    - below_horizon
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+  conditions:
+  - alias: Datum = kerst
+    condition: template
+    value_template: '{{
+
+      now().month == 12 and now().day >= 23
+
+      and now().month == 12 and now().day < 27
+
+      }} '
+  actions:
+  - action: scene_presets.start_dynamic_scene
+    metadata: {}
+    data:
+      preset_id: 85b8bc42-c564-4661-b058-f4e5792a6a6c
+      targets:
+        entity_id: light.buiten_lichten
+      transition: 30
+      interval: 30
+    alias: 'Scene Presets: "under the tree"'
+  mode: single
+- id: '1763751782798'
+  alias: Buitenlichten uit om half 1
+  description: ''
+  triggers:
+  - trigger: time
+    at: 00:30:00
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+    - sat
+    - sun
+  conditions:
+  - condition: state
+    entity_id: light.buiten_lichten
+    state:
+    - 'on'
+  actions:
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.buiten_lichten
+  mode: single
+- id: '1763847022248'
+  alias: Schuifpui gordijnen open in de ochtend (met Helper)
+  description: Opent gordijnen o.b.v. zon en de Iemand is wakker helper
+  triggers:
+  - trigger: numeric_state
+    entity_id: sun.sun
+    attribute: elevation
+    above: -4
+  - trigger: state
+    entity_id: input_boolean.iemand_is_wakker
+    to: 'on'
+  - trigger: time
+    at: 01:00:00
+    id: nacht_reset
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: nacht_reset
+      sequence:
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.iemand_is_wakker
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.iemand_is_wakker
+        state: 'on'
+      - condition: numeric_state
+        entity_id: sun.sun
+        attribute: elevation
+        above: -4
+      - condition: time
+        after: 06:00:00
+        before: '13:00:00'
+      - condition: state
+        entity_id: cover.schuifpui_alles
+        state: closed
+      sequence:
+      - action: cover.open_cover
+        target:
+          entity_id: cover.schuifpui_alles
+      - action: telegram_bot.send_message
+        data:
+          title: Gordijnen
+          message: Schuifpui gordijnen geopend (Beweging gedetecteerd en het is licht
+            genoeg)
+          chat_id:
+          - '-1001731338740'
+          message_thread_id: '44275'
+  mode: restart
+- id: '1763848487007'
+  alias: Schuifpui gordijnen sluiten
+  description: ''
+  triggers:
+  - entity_id:
+    - sun.sun
+    attribute: elevation
+    below: -5
+    trigger: numeric_state
+  conditions:
+  - condition: state
+    entity_id: cover.schuifpui_alles
+    state: open
+  actions:
+  - target:
+      entity_id: cover.schuifpui_alles
+    action: cover.close_cover
+  - data:
+      config_entry_id: 01K07Q4BWNVF9FKK82NGMHYPEC
+      message: Schuifpui gordijnen worden gesloten
+      title: Gordijnen
+      chat_id:
+      - '-1001731338740'
+      message_thread_id: '44275'
+    action: telegram_bot.send_message
+  mode: single
+- id: '1764947577339'
+  alias: Speel sinterklaas lied
+  description: ''
+  triggers:
+  - trigger: webhook
+    allowed_methods:
+    - POST
+    - PUT
+    - GET
+    local_only: false
+    webhook_id: speel-sinterklaas-lied-m-TSSaRiqjmy3tVX467tZtq0
+  conditions: []
+  actions:
+  - action: media_player.volume_set
+    metadata: {}
+    data:
+      volume_level: 0.6
+    target:
+      entity_id:
+      - media_player.woonkamer
+  - alias: Sofia_nummer afspelen
+    action: media_player.play_media
+    target:
+      entity_id:
+      - media_player.woonkamer
+    data:
+      media:
+        media_content_id: media-source://media_source/local/sint2025_Sofia.mp3
+        media_content_type: audio/mpeg
+        metadata:
+          title: sint2025_Sofia.mp3
+          thumbnail:
+          media_class: music
+          children_media_class:
+          navigateIds:
+          - {}
+          - media_content_type: app
+            media_content_id: media-source://media_source
+          browse_entity_id: media_player.kantoor
+  mode: single
+- id: '1766095259165'
+  alias: Garage verlichting aan
+  description: ''
+  triggers:
+  - type: occupied
+    device_id: 1dc53a270d2fb175c284aa28d80413ad
+    entity_id: 3569e222403891f523f22a23881314c4
+    domain: binary_sensor
+    trigger: device
+  - type: occupied
+    device_id: 2e47cb0e7fd308ac609f59e8e8b6a108
+    entity_id: 5bd370bbbf45fd7770ace54c43d2842d
+    domain: binary_sensor
+    trigger: device
+  conditions: []
+  actions:
+  - action: light.turn_on
+    metadata: {}
+    target:
+      entity_id: light.garage_lichten
+    data: {}
+  mode: single
+- id: '1766875710598'
+  alias: 'Master Energie Strategie: Daikin & Jacuzzi V3.0'
+  description: Gecombineerde sturing voor warmtepomp en jacuzzi. Oplossing voor price_in_3h
+    error.
+  triggers:
+  - trigger: time_pattern
+    minutes: /15
+  - trigger: state
+    entity_id: binary_sensor.warmtepomp_zon_overschot_stabiel
+  - trigger: numeric_state
+    entity_id: sensor.woonkamertemperatuur_temperature
+    below: 19.5
+  - trigger: homeassistant
+    event: start
+  actions:
+  - variables:
+      prices_list: '{{ state_attr(''sensor.tibber_forecast_prices'', ''prices'') }}'
+      current_price: '{{ states(''sensor.tibber_forecast_prices'') | float(0) }}'
+      avg_price_day: "{% if prices_list %}\n  {{ prices_list | map(attribute='price')
+        | list | sum / prices_list | count }}\n{% else %} 0 {% endif %}\n"
+      price_in_3h: "{% if prices_list and prices_list | count > 12 %}\n  {{ prices_list[12].price
+        | float(0) }}\n{% elif prices_list %}\n  {{ prices_list[-1].price | float(0)
+        }}\n{% else %}\n  0\n{% endif %}\n"
+      room_temp: '{{ states(''sensor.woonkamertemperatuur_temperature'') | float(20)
+        }}'
+      outside_temp_avg: '{{ states(''sensor.buitentemperatuur_24u_gemiddelde'') |
+        float(15) }}'
+      zon_actief: '{{ is_state(''binary_sensor.warmtepomp_zon_overschot_stabiel'',
+        ''on'') }}'
+      regel_naam: "{% if current_price < 0 %} \U0001F911 Negatieve Prijs (Max Verbruik)
+        {% elif room_temp < 19.5 %} \U0001F321️ Comfort WP (Koud) {% elif current_price
+        > (avg_price_day * 1.05) and room_temp > 19.8 %} \U0001F4C9 Coasting (Besparen)
+        {% elif zon_actief %} ☀️ Zon-overschot (Laden) {% elif price_in_3h > (current_price
+        * 1.4) and current_price < avg_price_day and current_price < 0.25 %} \U0001F680
+        Pre-heating (Opslag) {% elif current_price < (avg_price_day * 0.9) and current_price
+        < 0.25 %} \U0001F50B Thermal Battery (Laden) {% else %} ⚖️ Neutrale Balans
+        {% endif %}\n"
+      new_wp_offset: '{% if "Negatieve" in regel_naam %} 3 {% elif "Comfort" in regel_naam
+        %} 2 {% elif "Coasting" in regel_naam %} -3 {% elif "Zon" in regel_naam %}
+        2 {% elif "Pre-heating" in regel_naam %} 2 {% elif "Battery" in regel_naam
+        %} 1 {% else %} 0 {% endif %}
+
+        '
+      new_wp_mode: '{% set ot = outside_temp_avg %} {% set rt = room_temp %}  {% if
+        current_price < 0 %} {{ ''heating'' if ot < 20 else ''cooling'' }}  {% elif
+        rt < 19.0 %} heating {% elif rt > 26.0 %} cooling  {% elif ot < 15.0 %} heating
+        {% elif ot > 22.0 %} cooling  {% else %} auto {% endif %}
+
+        '
+      new_spa_temp: '{% if "Negatieve" in regel_naam %} 41.0 {% elif "Coasting" in
+        regel_naam %} 38.0 {% elif "Zon" in regel_naam %} 40.0 {% elif "Pre-heating"
+        in regel_naam %} 40.0 {% elif "Battery" in regel_naam %} 40.0 {% else %} 39.0
+        {% endif %}
+
+        '
+  - action: select.select_option
+    target:
+      entity_id: select.operation_mode
+    data:
+      option: '{{ new_wp_mode }}'
+  - if:
+    - condition: template
+      value_template: '{{ new_wp_offset != (states(''number.temperature_control'')
+        | float(0)) and new_wp_mode != ''off'' }}'
+    then:
+    - action: number.set_value
+      target:
+        entity_id: number.temperature_control
+      data:
+        value: '{{ new_wp_offset }}'
+  - if:
+    - condition: template
+      value_template: '{{ states(''number.spa_target_desired_temperature'') | float(0)
+        != new_spa_temp | float(0) }}'
+    then:
+    - action: number.set_value
+      target:
+        entity_id: number.spa_target_desired_temperature
+      data:
+        value: '{{ new_spa_temp }}'
+  - action: input_text.set_value
+    target:
+      entity_id: input_text.warmtepomp_actieve_regel
+    data:
+      value: '{{ regel_naam }}'
+  mode: restart
+- id: '1767291530336'
+  alias: 'Vaatwasser: Programma Exclusiviteit'
+  description: Zorgt dat er maar 1 programma aan staat
+  triggers:
+  - entity_id:
+    - input_boolean.vaatwassersnelprog
+    - input_boolean.vaatwasserecoprog
+    to: 'on'
+    trigger: state
+  actions:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.entity_id == ''input_boolean.vaatwassersnelprog''
+          }}'
+      sequence:
+      - target:
+          entity_id: input_boolean.vaatwasserecoprog
+        action: input_boolean.turn_off
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.entity_id == ''input_boolean.vaatwasserecoprog''
+          }}'
+      sequence:
+      - target:
+          entity_id: input_boolean.vaatwassersnelprog
+        action: input_boolean.turn_off
+  mode: restart
+- id: '1767636697019'
+  alias: Garage verlichting uit
+  description: ''
+  triggers:
+  - type: not_occupied
+    device_id: 45df4bceb73df03e2f13afeb90f27e5f
+    entity_id: 01ddc8e1a66e3329e44826492b0ea699
+    domain: binary_sensor
+    trigger: device
+  - type: not_occupied
+    device_id: 1dc53a270d2fb175c284aa28d80413ad
+    entity_id: 3569e222403891f523f22a23881314c4
+    domain: binary_sensor
+    trigger: device
+  conditions: []
+  actions:
+  - action: light.turn_off
+    metadata: {}
+    target:
+      entity_id: light.garage_lichten
+    data: {}
+  mode: single
+- id: '1767637916580'
+  alias: 'Licht: Overloop aan op basis van twee sensoren'
+  description: Schakelt overlooplichten op basis van mmWave en motion sensor
+  triggers:
+  - entity_id: binary_sensor.overloop_sensor_master_occupancy
+    from: 'off'
+    to: 'on'
+    trigger: state
+  - entity_id: binary_sensor.overloop_kids_sensor_motion
+    from: 'off'
+    to: 'on'
+    trigger: state
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: time
+        after: 09:00:00
+        before: '22:00:00'
+      sequence:
+      - target:
+          entity_id: light.overloop_lichten
+        data:
+          brightness_pct: 100
+        action: light.turn_on
+    - conditions:
+      - condition: time
+        after: '22:00:00'
+        before: 09:00:00
+      sequence:
+      - target:
+          entity_id: light.overloop_lichten
+        data:
+          brightness_pct: 10
+        action: light.turn_on
+  - wait_for_trigger:
+    - entity_id:
+      - binary_sensor.overloop_sensor_master_occupancy
+      - binary_sensor.overloop_kids_sensor_motion
+      to: 'off'
+      for:
+        minutes: 5
+      trigger: state
+    timeout: 01:00:00
+  - target:
+      entity_id: light.overloop_lichten
+    action: light.turn_off
+  mode: restart
+- id: '1768293241255'
+  alias: 'Carport: Lampen aan bij beweging (Verbeterd)'
+  description: Lampen aan bij beweging als het donker is, uit na 1 minuut rust.
+  triggers:
+  - trigger: state
+    entity_id: binary_sensor.presense_carport_presence
+    to: 'on'
+    id: aan
+  - trigger: state
+    entity_id: binary_sensor.presense_carport_presence
+    to: 'off'
+    for:
+      minutes: 1
+    id: uit
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: aan
+      - condition: state
+        entity_id: sun.sun
+        state: below_horizon
+      sequence:
+      - action: light.turn_on
+        target:
+          entity_id: light.carport_lichten
+    - conditions:
+      - condition: trigger
+        id: uit
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id: light.carport_lichten
+  mode: queued
+  max: 10
+- id: '1768294519271'
+  alias: Carport presense - verzenden foto
+  description: ''
+  triggers:
+  - entity_id: binary_sensor.presense_carport_presence
+    to: 'on'
+    trigger: state
+  conditions: []
+  actions:
+  - target:
+      entity_id: camera.carport_main
+    data:
+      filename: '{{ snapshot_path }}'
+    action: camera.snapshot
+  - delay: 00:00:01
+  - action: telegram_bot.send_photo
+    data:
+      config_entry_id: 01K07Q4BWNVF9FKK82NGMHYPEC
+      chat_id:
+      - '-1001731338740'
+      message_thread_id: '44274'
+      file: '{{ snapshot_path }}'
+      caption: 'Carport: beweging gedetecteerd'
+  variables:
+    snapshot_path: /config/www/pictures/channel3_snapshot.jpg
+  mode: single
+- id: '1768568489413'
+  alias: 'Daikin Notificaties: Status Wijzigingen (Gecoördineerd)'
+  description: Verzamelt meerdere wijzigingen die kort achter elkaar plaatsvinden
+    en verstuurt deze in één gebundeld bericht.
+  triggers:
+  - trigger: state
+    entity_id:
+    - select.operation_mode
+    - number.temperature_control
+    - water_heater.domestic_hot_water_tank
+    - input_text.warmtepomp_actieve_regel
+  conditions:
+  - condition: template
+    value_template: '{{ trigger.from_state.state != trigger.to_state.state }}'
+  actions:
+  - action: system_log.write
+    data:
+      message: Wijziging gedetecteerd voor {{ trigger.entity_id }}
+      level: info
+  - delay: 00:00:05
+  - action: telegram_bot.send_message
+    data:
+      title: "\U0001F916 <b>WP Status Update</b>"
+      message: "{% set mode = states('select.operation_mode') %} {% set offset = states('number.temperature_control')
+        %} {% set boiler = state_attr('water_heater.domestic_hot_water_tank', 'temperature')
+        %} {% set regel = states('input_text.warmtepomp_actieve_regel') %} {% set
+        prijs = states('sensor.tibber_forecast_prices') | float(0) %}\n\U0001F4CA
+        <b>NIEUWE STATUS</b>\n\U0001F4CD <b>Strategie:</b> <code>{{ regel }}</code>
+        \U0001F504 <b>Modus:</b> <code>{{ mode }}</code> \U0001F321️ <b>Offset:</b>
+        <code>{{ offset if mode != 'off' else '-' }}</code> \U0001F4A7 <b>Boiler:</b>
+        <code>{{ boiler }}°C</code> \U0001F4B6 <b>Huidige Prijs:</b> <code>€{{ prijs
+        | round(3) }}</code> ───────────────────\n"
+      chat_id: '-1001731338740'
+      message_thread_id: '44276'
+      parse_mode: html
+  mode: restart
+  max_exceeded: silent
+- id: '1768739651749'
+  alias: Pepper Uitlaatschema via Google Calendar
+  description: Leest de agenda 'uitlaten_pepper' en update de status sensoren
+  triggers:
+  - minutes: /30
+    trigger: time_pattern
+  - entity_id: calendar.uitlaten_pepper
+    trigger: state
+  - event: start
+    trigger: homeassistant
+  actions:
+  - target:
+      entity_id: calendar.uitlaten_pepper
+    data:
+      start_date_time: '{{ today_at(''00:00'') }}'
+      end_date_time: '{{ today_at(''23:59'') }}'
+    response_variable: agenda
+    action: calendar.get_events
+  - variables:
+      events: '{{ agenda[''calendar.uitlaten_pepper''].events | sort(attribute=''start'')
+        }}'
+      current_person: '{% set active = events | selectattr(''start'', ''lt'', now().isoformat())
+        | selectattr(''end'', ''gt'', now().isoformat()) | list %} {{ active[0].summary
+        if active | count > 0 else ''Niemand'' }}
+
+        '
+      daily_text: "{% if events | count >= 3 %}\n  Ochtend: {{ events[0].summary }},
+        Middag: {{ events[1].summary }}, Avond: {{ events[2].summary }}\n{% elif events
+        | count > 0 %}\n  {% set parts = ns(items=[]) %}\n  {% for e in events %}\n
+        \   {% set parts.items = parts.items + [e.summary] %}\n  {% endfor %}\n  Schema:
+        {{ parts.items | join(', ') }}\n{% else %}\n  Geen schema gevonden in agenda\n{%
+        endif %}\n"
+  - target:
+      entity_id: input_text.dogwalkinglist
+    data:
+      value: '{{ current_person }}'
+    action: input_text.set_value
+  - target:
+      entity_id: input_text.dogwalkingschedule
+    data:
+      value: '{{ daily_text }}'
+    action: input_text.set_value
+  mode: restart
+- id: '1768943082972'
+  alias: 'Warmtepomp: Boost Inschakelen'
+  description: Controleert temperatuur en zet boost aan of stuurt melding dat het
+    niet nodig is
+  triggers:
+  - entity_id: input_boolean.warmtepompboost
+    from: 'off'
+    to: 'on'
+    trigger: state
+  actions:
+  - choose:
+    - conditions:
+      - condition: numeric_state
+        entity_id: water_heater.domestic_hot_water_tank
+        attribute: current_temperature
+        above: 35
+      sequence:
+      - action: telegram_bot.send_message
+        data:
+          title: "\U0001F916 <b>WP Status Update</b>"
+          target: '-1001731338740'
+          parse_mode: html
+          message: '{% set boiler = state_attr(''water_heater.domestic_hot_water_tank'',
+            ''current_temperature'') %}
+
+            ⚠️ <b>BOOST NIET NODIG</b> <code>Warmtepomp Boost</code>
+
+            De watertemperatuur is al hoog genoeg ({{ boiler }}°C).
+
+            '
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.warmtepompboost
+    - conditions:
+      - condition: numeric_state
+        entity_id: water_heater.domestic_hot_water_tank
+        attribute: current_temperature
+        below: 35
+      sequence:
+      - action: water_heater.set_operation_mode
+        target:
+          entity_id: water_heater.domestic_hot_water_tank
+        data:
+          operation_mode: performance
+      - action: telegram_bot.send_message
+        data:
+          title: "\U0001F916 <b>WP Status Update</b>"
+          target: '-1001731338740'
+          parse_mode: html
+          message: "{% set boiler = state_attr('water_heater.domestic_hot_water_tank',
+            'current_temperature') %}\n\U0001F680 <b>BOOST INGESCHAKELD</b> <code>Warmtepomp
+            Boost</code>\nDe warmtepomp is in performance modus gezet.\n───────────────────
+            \U0001F4A7 <b>Boiler:</b> <code>{{ boiler }}°C</code>\n"
+  mode: restart
+- id: '1768943278648'
+  alias: 'Warmtepomp: Boost Automatisch Uit'
+  description: Zet de boost uit als de temperatuur boven de 40 graden komt
+  triggers:
+  - entity_id: water_heater.domestic_hot_water_tank
+    attribute: current_temperature
+    above: 40
+    trigger: numeric_state
+  conditions:
+  - condition: state
+    entity_id: input_boolean.warmtepompboost
+    state: 'on'
+  actions:
+  - action: water_heater.set_operation_mode
+    target:
+      entity_id: water_heater.domestic_hot_water_tank
+    data:
+      operation_mode: 'on'
+  - action: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.warmtepompboost
+  - action: telegram_bot.send_message
+    data:
+      title: "\U0001F916 <b>WP Status Update</b>"
+      target: '-1001731338740'
+      parse_mode: html
+      message: '{% set boiler = state_attr(''water_heater.domestic_hot_water_tank'',
+        ''current_temperature'') %}
+
+        ✅ <b>BOOST VOLTOOID</b> <code>Warmtepomp Boost</code>
+
+        Doeltemperatuur bereikt ({{ boiler }}°C), boost is uitgeschakeld.
+
+        '
+  mode: restart
+- id: '1768943706455'
+  alias: 'Warmtepomp: Boost Handmatig Uit'
+  description: Zet de boost modus van de warmtepomp uit als de dashboard knop handmatig
+    wordt uitgezet
+  triggers:
+  - entity_id: input_boolean.warmtepompboost
+    from: 'on'
+    to: 'off'
+    trigger: state
+  actions:
+  - action: water_heater.set_operation_mode
+    target:
+      entity_id: water_heater.domestic_hot_water_tank
+    data:
+      operation_mode: 'on'
+  - action: telegram_bot.send_message
+    data:
+      title: "\U0001F916 <b>WP Status Update</b>"
+      target: '-1001731338740'
+      parse_mode: html
+      message: "{% set boiler = state_attr('water_heater.domestic_hot_water_tank',
+        'current_temperature') %}\n⏹️ <b>BOOST HANDMATIG GESTOPT</b> <code>Warmtepomp
+        Boost</code>\nDe boost is via het dashboard uitgeschakeld. De warmtepomp staat
+        weer op de normale modus.\n─────────────────── \U0001F4A7 <b>Boiler:</b> <code>{{
+        boiler }}°C</code>\n"
+  mode: restart
+- id: '1769202667939'
+  alias: Jacuzzi Onderhoud Start
+  description: Start de wekelijkse jacuzzi check op zondag
+  triggers:
+  - at: '13:00:00'
+    trigger: time
+  conditions:
+  - condition: time
+    weekday:
+    - sun
+  actions:
+  - action: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.jacuzzi_onderhoud_status
+  - action: telegram_bot.send_message
+    data:
+      chat_id: '-1001731338740'
+      message_thread_id: '44277'
+      parse_mode: html
+      title: 配 <b>Jacuzzi Onderhoud</b>
+      message: "Het is weer zondag! De jacuzzi heeft zijn wekelijkse onderhoud nodig.
+        \nDoe 100ml aqua-pure in het water van de jacuzzi.\nDoe een chloortablet in
+        de dispenser.\nIs het onderhoud uitgevoerd? Klik op de knop op het dashboard.\n"
+  mode: single
+- id: '1769202943848'
+  alias: Jacuzzi Onderhoud Herinnering
+  description: Herhaalt de melding zolang de status op uit staat
+  triggers:
+  - minutes: /30
+    trigger: time_pattern
+  conditions:
+  - condition: state
+    entity_id: input_boolean.jacuzzi_onderhoud_status
+    state: 'off'
+  - condition: time
+    after: '13:01:00'
+    weekday:
+    - sun
+  actions:
+  - action: telegram_bot.send_message
+    data:
+      target: '-1001731338740'
+      message_thread_id: '44277'
+      parse_mode: html
+      title: '⚠️ <b>HERINNERING: Jacuzzi</b>'
+      message: "Het onderhoud is nog niet afgemeld! \nDoe 100ml aqua-pure in het water
+        van de jacuzzi.\nDoe een chloortablet in de dispenser.\nHeb je het gedaan:
+        klik op de knop op het dashboard.\n"
+  mode: single
+- id: '1769203052152'
+  alias: Jacuzzi Onderhoud Bevestiging via Telegram
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_boolean.jacuzzi_onderhoud_status
+    from:
+    - 'off'
+    to:
+    - 'on'
+  actions:
+  - action: telegram_bot.edit_message
+    data:
+      chat_id: '-1001731338740'
+      message_id: '{{ trigger.event.data.message.message_id }}'
+      parse_mode: html
+      message: "\U0001F6C1 <b>Jacuzzi Onderhoud</b>\n\n✅ <b>STATUS: VOLTOOID</b>"
+- id: '1769353935976'
+  alias: 'Systeem: Herlaad Telegram Integratie'
+  description: Herlaadt de Telegram integratie om callback problemen te voorkomen
+  triggers:
+  - at: 04:00:00
+    trigger: time
+  - event: start
+    trigger: homeassistant
+  actions:
+  - action: homeassistant.reload_config_entry
+    target:
+      device_id: 4993d1d67c3a02c3dcfdd10d8f1e8e6d
+  mode: single
+- id: '1769716111724'
+  alias: Waterontharder zout is op
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.waterontharderzoutmeter_water_leak
+    to:
+    - 'on'
+  conditions: []
+  actions:
+  - action: input_boolean.turn_on
+    target:
+      entity_id:
+      - input_boolean.waterontharder_zout_nodig
+    data: {}
+  - action: telegram_bot.send_message
+    data:
+      chat_id: '-1001731338740'
+      message_thread_id: 44440
+      parse_mode: html
+      title: 配 <b>Zout waterontharder is op</b>
+      message: "De zouttabletten van de waterontharder zijn op. \nZijn ze bijgevuld?
+        Klik op de knop hieronder.\n"
+      inline_keyboard:
+      - ✅ Ja:/zout_done
+  mode: single
+- id: '1769717202768'
+  alias: Herinnering zout bijvullen
+  description: Herhaalt de melding zolang de status op aan staat
+  triggers:
+  - trigger: time
+    at: '10:00:00'
+  conditions:
+  - condition: state
+    entity_id: input_boolean.waterontharder_zout_nodig
+    state:
+    - 'on'
+  actions:
+  - action: telegram_bot.send_message
+    data:
+      chat_id: '-1001731338740'
+      message_thread_id: '44440'
+      parse_mode: html
+      title: '⚠️ <b>HERINNERING: Waterontharder</b>'
+      message: "Het bijvullen van het zout is nog niet afgemeld! \nKlik op \"Ja\"
+        als het klaar is.\n"
+      inline_keyboard:
+      - ✅ Ja:/jacuzzi_done
+  mode: single
+- id: '1769717733115'
+  alias: Zout bijgevuld
+  description: ''
+  triggers:
+  - event_type: telegram_callback
+    event_data:
+      data: /zout_done
+    trigger: event
+  conditions: []
+  actions:
+  - action: telegram_bot.answer_callback_query
+    data:
+      callback_query_id: '{{ trigger.event.data.id }}'
+      message: Ontvangen!
+      show_alert: false
+  - action: input_boolean.turn_off
+    target:
+      entity_id:
+      - input_boolean.waterontharder_zout_nodig
+    data: {}
+  - action: telegram_bot.edit_message
+    data:
+      chat_id: '-1001731338740'
+      message_id: '{{ trigger.event.data.message.message_id }}'
+      parse_mode: html
+      message: '<b>Zout is bijgevuld</b>
+
+
+        ✅ <b>STATUS: VOLTOOID</b>'
+  mode: single
+- id: '1769785726215'
+  alias: Woonkamer lampen aan op basis van zonshoogte
+  description: Schakel lampen in wanneer de zon onder een bepaald aantal graden zakt
+  triggers:
+  - entity_id: sun.sun
+    attribute: elevation
+    below: 1
+    trigger: numeric_state
+  conditions: []
+  actions:
+  - target:
+      entity_id:
+      - light.schuifpui_lichten
+      - light.zithoek_ledstrip
+      - light.woonkamer_lichten
+    action: light.turn_on
+    data:
+      brightness_pct: 80
+  mode: single
+- id: '1769886579405'
+  alias: 'Systeem: Zet Iemand is wakker op ON'
+  description: Registreert de eerste beweging alleen tussen 07:00 en 11:00
+  triggers:
+  - trigger: state
+    entity_id: binary_sensor.overloop_sensor_master_occupancy
+    to: 'on'
+  conditions:
+  - condition: time
+    after: 07:00:00
+    before: '11:00:00'
+  actions:
+  - action: input_boolean.turn_on
+    target:
+      entity_id: input_boolean.iemand_is_wakker
+  mode: single
+- id: '1769886579406'
+  alias: Master Vakantie Schakelaar
+  description: Wisselt enkel tussen het normale profiel en het vakantie profiel
+  triggers:
+  - entity_id: input_boolean.vakantie
+    trigger: state
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.vakantie
+        state: 'on'
+      sequence:
+      - target:
+          entity_id:
+          - automation.daikin_notificaties_status_wijzigingen
+          - automation.daikin_offset_sturen_telegram
+          - automation.garage_verlichting
+          - automation.garage_verlichting_uit
+          - automation.jacuzzi_onderhoud_bevestiging_via_telegram
+          - automation.jacuzzi_onderhoud_herinnering
+          - automation.jacuzzi_onderhoud_start
+          - automation.pepper_uitlaatschema_via_google_calendar
+          - automation.schuifpui_gordijnen_open_in_de_ochtend
+          - automation.schuifpui_gordijnen_sluiten
+          - automation.systeem_zet_iemand_is_wakker_op_on
+          - automation.warmtepomp_boost_automatisch_uit
+          - automation.warmtepomp_boost_handmatig_uit
+          - automation.warmtepomp_boost_inschakelen
+          - automation.wasmachine_bericht_gestart
+          - automation.wasmachine_bericht_klaar
+          - automation.woonkamer_lampen_aan_op_basis_van_zonshoogte
+        data:
+          stop_actions: true
+        action: automation.turn_off
+      - target:
+          entity_id:
+          - automation.vakantie_gordijnen_schuifpui_op_zon
+          - automation.screens_vakantiemodus_daan_eva_master
+          - switch.vakantie_lampen
+        action: homeassistant.turn_on
+        data: {}
+      - action: telegram_bot.send_message
+        data:
+          config_entry_id: 01K07Q4BWNVF9FKK82NGMHYPEC
+          title: "\U0001F334 Vakantiemodus"
+          message: 'Systeem: Vakantie-automatiseringen en aanwezigheidssimulatie (7
+            dagen terug) geactiveerd. Normale schema''s gedeactiveerd.'
+          target:
+          - '-1001731338740'
+          message_thread_id: '44536'
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.vakantie
+        state: 'off'
+      sequence:
+      - target:
+          entity_id:
+          - automation.vakantie_gordijnen_schuifpui_op_zon
+          - automation.screens_vakantiemodus_daan_eva_master
+          - switch.vakantie_lampen
+        action: homeassistant.turn_off
+      - target:
+          entity_id:
+          - automation.daikin_notificaties_status_wijzigingen
+          - automation.daikin_offset_sturen_telegram
+          - automation.garage_verlichting
+          - automation.garage_verlichting_uit
+          - automation.jacuzzi_onderhoud_bevestiging_via_telegram
+          - automation.jacuzzi_onderhoud_herinnering
+          - automation.jacuzzi_onderhoud_start
+          - automation.pepper_uitlaatschema_via_google_calendar
+          - automation.schuifpui_gordijnen_open_in_de_ochtend
+          - automation.schuifpui_gordijnen_sluiten
+          - automation.systeem_zet_iemand_is_wakker_op_on
+          - automation.warmtepomp_boost_automatisch_uit
+          - automation.warmtepomp_boost_handmatig_uit
+          - automation.warmtepomp_boost_inschakelen
+          - automation.wasmachine_bericht_gestart
+          - automation.wasmachine_bericht_klaar
+          - automation.woonkamer_lampen_aan_op_basis_van_zonshoogte
+        action: automation.turn_on
+      - action: telegram_bot.send_message
+        data:
+          config_entry_id: 01K07Q4BWNVF9FKK82NGMHYPEC
+          title: "\U0001F3E0 Welkom thuis"
+          message: 'Systeem: Normale automatiseringen hervat. Vakantiemodus en simulatie
+            uitgeschakeld.'
+          target:
+          - '-1001731338740'
+          message_thread_id: '44536'
+  mode: restart
+- id: vakantie_gordijnen_schuifpui_op_zon
+  alias: 'Vakantie: Gordijnen schuifpui op zon'
+  description: Opent en sluit gordijnen puur op zonnestand tijdens vakantie
+  triggers:
+  - entity_id: sun.sun
+    attribute: elevation
+    above: 0
+    id: op
+    trigger: numeric_state
+  - entity_id: sun.sun
+    attribute: elevation
+    below: -4
+    id: neer
+    trigger: numeric_state
+  conditions:
+  - condition: state
+    entity_id: input_boolean.vakantie
+    state: 'on'
+  actions:
+  - action: "{% if trigger.id == 'op' %}\n  cover.open_cover\n{% else %}\n  cover.close_cover\n{%
+      endif %}\n"
+    target:
+      entity_id: cover.schuifpui_alles
+  mode: restart
+- id: '1770502664288'
+  alias: 'OS 2026: Telegram Notificatie'
+  description: Stuurt 30 min van tevoren een bericht voor Nederlandse evenementen
+  triggers:
+  - event: start
+    offset: -00:30:00
+    entity_id: calendar.netherlands_milano_cortina_2026
+    trigger: calendar
+  actions:
+  - action: telegram_bot.send_message
+    metadata: {}
+    data:
+      config_entry_id: 01K07Q4BWNVF9FKK82NGMHYPEC
+      message: 'Over 30 minuten begint: {{ trigger.calendar_event.summary }}
+
+        Starttijd: {{ trigger.calendar_event.start }} Locatie: {{ trigger.calendar_event.location
+        | default(''Onbekend'') }}
+
+        '
+      title: Nederlanders in actie over 30 minuten!
+      chat_id:
+      - '-1001731338740'
+      message_thread_id: '44788'
+  mode: parallel
+  max: 10
+- id: '1770926081886'
+  alias: 'Screens: Vakantiemodus (Daan, Eva, Master)'
+  description: Beheert screens tijdens vakantie met temperatuur- en positiecheck
+  triggers:
+  - at: '10:00:00'
+    id: alles_open
+    trigger: time
+  - at: '21:00:00'
+    id: daan_dicht
+    trigger: time
+  - at: '22:00:00'
+    id: eva_dicht
+    trigger: time
+  - at: '22:30:00'
+    id: master_dicht
+    trigger: time
+  conditions:
+  - condition: state
+    entity_id: input_boolean.vakantie
+    state: 'on'
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: alles_open
+      - condition: numeric_state
+        entity_id: sensor.buitentemperatuur_24u_gemiddelde
+        above: 5
+      - condition: numeric_state
+        entity_id: sensor.outdoor_temperature
+        above: 5
+      sequence:
+      - if:
+        - condition: template
+          value_template: '{{ state_attr(''cover.daan_alles'', ''current_position'')
+            | int != 100 }}'
+        then:
+        - action: cover.open_cover
+          target:
+            entity_id: cover.daan_alles
+      - if:
+        - condition: template
+          value_template: '{{ state_attr(''cover.eva_alles'', ''current_position'')
+            | int != 100 }}'
+        then:
+        - action: cover.open_cover
+          target:
+            entity_id: cover.eva_alles
+      - if:
+        - condition: template
+          value_template: '{{ state_attr(''cover.master_alles'', ''current_position'')
+            | int != 100 }}'
+        then:
+        - action: cover.open_cover
+          target:
+            entity_id: cover.master_alles
+    - conditions:
+      - condition: trigger
+        id: daan_dicht
+      - condition: template
+        value_template: '{{ state_attr(''cover.daan_alles'', ''current_position'')
+          | int != 0 }}'
+      sequence:
+      - action: cover.close_cover
+        target:
+          entity_id: cover.daan_alles
+    - conditions:
+      - condition: trigger
+        id: eva_dicht
+      - condition: template
+        value_template: '{{ state_attr(''cover.eva_alles'', ''current_position'')
+          | int != 0 }}'
+      sequence:
+      - action: cover.close_cover
+        target:
+          entity_id: cover.eva_alles
+    - conditions:
+      - condition: trigger
+        id: master_dicht
+      - condition: template
+        value_template: '{{ state_attr(''cover.master_alles'', ''current_position'')
+          | int != 0 }}'
+      sequence:
+      - action: cover.close_cover
+        target:
+          entity_id: cover.master_alles
+  mode: parallel
+  max: 10
+- id: '1771342252165'
+  alias: 'Kantoor Rob: Aanwezigheid, Licht en Klimaat (Verbeterd)'
+  description: Schakelt licht direct in bij aanwezigheid en lage lichtsterkte. Regelt
+    klimaat (verwarmen/koelen) pas na 5 minuten continue aanwezigheid.
+  triggers:
+  - entity_id: binary_sensor.presense_kantoor_rob_presence
+    from: 'off'
+    to: 'on'
+    id: aanwezig_direct
+    trigger: state
+  - entity_id: binary_sensor.presense_kantoor_rob_presence
+    from: 'off'
+    to: 'on'
+    for:
+      minutes: 5
+    id: aanwezig_klimaat
+    trigger: state
+  - entity_id: sensor.hue_sensor_kantoor_rob_illuminance
+    below: 20
+    id: donker
+    trigger: numeric_state
+  - entity_id: sensor.hue_sensor_kantoor_rob_temperature
+    trigger: state
+    id: temp_update
+  - entity_id: binary_sensor.presense_kantoor_rob_presence
+    from: 'on'
+    to: 'off'
+    id: afwezig
+    trigger: state
+  actions:
+  - choose:
+    - conditions:
+      - condition: or
+        conditions:
+        - condition: trigger
+          id: aanwezig_direct
+        - condition: trigger
+          id: donker
+      - condition: state
+        entity_id: binary_sensor.presense_kantoor_rob_presence
+        state: 'on'
+      - condition: numeric_state
+        entity_id: sensor.hue_sensor_kantoor_rob_illuminance
+        below: 19
+      sequence:
+      - action: light.turn_on
+        target:
+          entity_id: light.gameroom_lamp_1
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.presense_kantoor_rob_presence
+        state: 'on'
+        for:
+          minutes: 5
+      sequence:
+      - choose:
+        - conditions:
+          - condition: numeric_state
+            entity_id: sensor.hue_sensor_kantoor_rob_temperature
+            below: 17
+          sequence:
+          - action: fan.turn_on
+            target:
+              entity_id: fan.philips_air_8000
+          - action: select.select_option
+            target:
+              entity_id: select.philips_air_8000_functie
+            data:
+              option: heating
+        - conditions:
+          - condition: numeric_state
+            entity_id: sensor.hue_sensor_kantoor_rob_temperature
+            above: 26
+          sequence:
+          - action: fan.turn_on
+            target:
+              entity_id: fan.philips_air_8000
+          - action: select.select_option
+            target:
+              entity_id: select.philips_air_8000_functie
+            data:
+              option: fan
+        - conditions:
+          - condition: numeric_state
+            entity_id: sensor.hue_sensor_kantoor_rob_temperature
+            above: 17.5
+          - condition: numeric_state
+            entity_id: sensor.hue_sensor_kantoor_rob_temperature
+            below: 25.5
+          sequence:
+          - action: select.select_option
+            target:
+              entity_id: select.philips_air_8000_functie
+            data:
+              option: circulation
+    - conditions:
+      - condition: trigger
+        id: afwezig
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id: light.gameroom_lamp_1
+      - action: fan.turn_off
+        target:
+          entity_id: fan.philips_air_8000
+  mode: restart
+- id: '1771537266654'
+  alias: 'Alarmo: Koppelen aan Vakantie-modus'
+  description: Schakelt het alarm in of uit op basis van de vakantie-status.
+  triggers:
+  - entity_id: input_boolean.vakantie
+    from: 'off'
+    to: 'on'
+    id: vakantie_start
+    trigger: state
+  - entity_id: input_boolean.vakantie
+    from: 'on'
+    to: 'off'
+    id: vakantie_einde
+    trigger: state
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: vakantie_start
+      sequence:
+      - action: alarm_control_panel.alarm_arm_custom_bypass
+        target:
+          device_id: 1441ac94cbbf052d090bcfd2d1c74439
+        data:
+          code: '6125'
+    - conditions:
+      - condition: trigger
+        id: vakantie_einde
+      sequence:
+      - target:
+          device_id: 1441ac94cbbf052d090bcfd2d1c74439
+        data:
+          code: '6125'
+        action: alarm_control_panel.alarm_disarm
+  mode: restart
+- id: '1772724760127'
+  alias: 'Warmtepomp: Boost Controller - Centraal'
+  description: Beheert zowel zon-overschot als handmatige activatie van de warmtepomp
+    boost
+  triggers:
+  - entity_id: input_boolean.warmtepomp_handmatige_activatie
+    from: 'off'
+    to: 'on'
+    id: handmatig
+    trigger: state
+  - entity_id: binary_sensor.warmtepomp_boost_zon_overschot
+    trigger: state
+    id: zon_check
+  - entity_id: water_heater.domestic_hot_water_tank
+    attribute: current_temperature
+    trigger: state
+    id: zon_check
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: handmatig
+      sequence:
+      - choose:
+        - conditions:
+          - condition: numeric_state
+            entity_id: water_heater.domestic_hot_water_tank
+            attribute: current_temperature
+            above: 35
+          sequence:
+          - action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.warmtepomp_handmatige_activatie
+          - action: telegram_bot.send_message
+            data:
+              title: "\U0001F916 WP Status Update"
+              chat_id: '-1001731338740'
+              message_thread_id: '44275'
+              parse_mode: html
+              message: '⚠️ <b>BOOST GEWEIGERD</b>
+
+                Handmatig niet nodig. Water is al {{ state_attr(''water_heater.domestic_hot_water_tank'',
+                ''current_temperature'') }}°C.'
+        - conditions:
+          - condition: numeric_state
+            entity_id: water_heater.domestic_hot_water_tank
+            attribute: current_temperature
+            below: 35
+          sequence:
+          - action: water_heater.set_operation_mode
+            target:
+              entity_id: water_heater.domestic_hot_water_tank
+            data:
+              operation_mode: performance
+          - action: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.warmtepompboost
+          - action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.warmtepomp_handmatige_activatie
+          - action: telegram_bot.send_message
+            data:
+              title: "\U0001F916 WP Status Update"
+              chat_id: '-1001731338740'
+              message_thread_id: '44275'
+              message: "\U0001F680 <b>BOOST HANDMATIG INGESCHAKELD</b>"
+    - conditions:
+      - condition: trigger
+        id: zon_check
+      - condition: state
+        entity_id: binary_sensor.warmtepomp_boost_zon_overschot
+        state: 'on'
+      - condition: numeric_state
+        entity_id: water_heater.domestic_hot_water_tank
+        attribute: current_temperature
+        below: 56
+      - condition: state
+        entity_id: input_boolean.warmtepompboost
+        state: 'off'
+      sequence:
+      - action: water_heater.set_operation_mode
+        target:
+          entity_id: water_heater.domestic_hot_water_tank
+        data:
+          operation_mode: performance
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.warmtepompboost
+      - action: telegram_bot.send_message
+        data:
+          title: ☀️ WP Status Update
+          chat_id: '-1001731338740'
+          message_thread_id: '44275'
+          parse_mode: html
+          message: "\U0001F680 <b>BOOST (ZON) INGESCHAKELD</b>\nTemperatuur: {{ state_attr('water_heater.domestic_hot_water_tank',
+            'current_temperature') }}°C."
+  mode: restart
+- id: '1772724795261'
+  alias: 'Warmtepomp: Boost Controller - Uitschakelen'
+  description: Beheert het uitschakelen van de boost modus
+  triggers:
+  - entity_id: input_boolean.warmtepompboost
+    from: 'on'
+    to: 'off'
+    id: knop_uit
+    trigger: state
+  - entity_id: water_heater.domestic_hot_water_tank
+    attribute: current_temperature
+    above: 57
+    id: max_temp
+    trigger: numeric_state
+  - entity_id: binary_sensor.warmtepomp_boost_zon_overschot
+    from: 'on'
+    to: 'off'
+    id: zon_weg
+    trigger: state
+  - entity_id: water_heater.domestic_hot_water_tank
+    attribute: current_temperature
+    above: 35
+    id: handmatig_klaar
+    trigger: numeric_state
+  conditions:
+  - condition: state
+    entity_id: input_boolean.warmtepompboost
+    state: 'on'
+  actions:
+  - choose:
+    - conditions:
+      - or:
+        - condition: trigger
+          id: knop_uit
+        - condition: trigger
+          id: max_temp
+      sequence:
+      - action: water_heater.set_operation_mode
+        target:
+          entity_id: water_heater.domestic_hot_water_tank
+        data:
+          operation_mode: 'on'
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.warmtepompboost
+      - action: telegram_bot.send_message
+        data:
+          title: ⏹️ WP Status Update
+          chat_id: '-1001731338740'
+          message_thread_id: '44275'
+          parse_mode: html
+          message: '✅ <b>BOOST GESTOPT</b>
+
+
+            Tank is {{ state_attr(''water_heater.domestic_hot_water_tank'', ''current_temperature'')
+            }}°C. Terug naar normale modus.'
+    - conditions:
+      - or:
+        - condition: trigger
+          id: zon_weg
+        - condition: trigger
+          id: handmatig_klaar
+      sequence:
+      - if:
+        - condition: state
+          entity_id: binary_sensor.warmtepomp_boost_zon_overschot
+          state: 'off'
+        - condition: numeric_state
+          entity_id: water_heater.domestic_hot_water_tank
+          attribute: current_temperature
+          above: 35
+        then:
+        - action: water_heater.set_operation_mode
+          target:
+            entity_id: water_heater.domestic_hot_water_tank
+          data:
+            operation_mode: 'on'
+        - action: input_boolean.turn_off
+          target:
+            entity_id: input_boolean.warmtepompboost
+        - action: telegram_bot.send_message
+          data:
+            title: ⏹️ WP Status Update
+            chat_id: '-1001731338740'
+            message_thread_id: '44275'
+            parse_mode: html
+            message: '✅ <b>BOOST GESTOPT</b>
+
+
+              Tank is {{ state_attr(''water_heater.domestic_hot_water_tank'', ''current_temperature'')
+              }}°C. Terug naar normale modus.'
+  mode: restart
+- id: '1773002207202'
+  alias: Carport presence - AI Analyse naar Telegram
+  description: Geavanceerde AI analyse van de carport met 15 seconden wachttijd voor
+    het antwoord
+  triggers:
+  - entity_id: binary_sensor.presense_carport_presence
+    to: 'on'
+    trigger: state
+  actions:
+  - target:
+      entity_id: camera.frigate_carport
+    data:
+      filename: '{{ snapshot_path }}'
+    action: camera.snapshot
+  - action: ai_task.generate_data
+    data:
+      task_name: Carport Analyse
+      entity_id: ai_task.google_ai_task
+      instructions: "Je bent een analytische beveiligingsexpert. Analyseer de afbeelding
+        van de carport.\n**Context (Standaard situatie):** - Een witte BMW (van Kim)
+        en een witte Volvo (van Rob) staan normaal geparkeerd.\n**Jouw opdracht:**
+        1. Analyseer het volledige beeld, maar benoem de standaard situatie (BMW/Volvo
+        aanwezig) NIET, tenzij een voertuig ontbreekt.  2. Als een auto ontbreekt,
+        trek dan direct de conclusie: \"Kim is afwezig\" (bij ontbrekende BMW) of
+        \"Rob is afwezig\" (bij ontbrekende Volvo). 3. Identificeer de bron van de
+        beweging: Wie of wat is er in beeld? Maak een onderscheid tussen:\n   - Bezorgdiensten
+        (let op logo's op busjes of kleding zoals PostNL, DHL, GLS).\n   - Personen
+        (beschrijf type: kind, volwassene, postbode) en hun actie.\n   - Dieren of
+        onbekende voertuigen.\n4. Rapporteer ALLEEN afwijkingen van de normale rustsituatie.
+        Als alles normaal is en er staat slechts een persoon in beeld, focus dan volledig
+        op die persoon.\nSchrijf je rapport in het Nederlands, zakelijk en to-the-point
+        (max 3-4 zinnen).  Begin direct met de belangrijkste waarneming.\n"
+      attachments:
+      - media_content_id: media-source://camera/camera.frigate_carport
+        media_content_type: image/jpeg
+        metadata:
+          title: Frigate Carport
+          thumbnail: /api/camera_proxy/camera.frigate_carport
+          media_class: video
+          children_media_class:
+          navigateIds:
+          - {}
+          - media_content_type: app
+            media_content_id: media-source://camera
+    response_variable: ai_antwoord
+  - delay: 00:00:15
+  - action: telegram_bot.send_photo
+    data:
+      config_entry_id: 01K07Q4BWNVF9FKK82NGMHYPEC
+      chat_id:
+      - '-1001731338740'
+      message_thread_id: '44274'
+      file: '{{ snapshot_path }}'
+      caption: '*Carport Analyse:* {{ ai_antwoord.predictions.text if ai_antwoord.predictions
+        is defined else ai_antwoord.text }}
+
+        '
+  variables:
+    snapshot_path: /config/www/pictures/carport_analysis.jpg
+  mode: single
+- id: '1773579181068'
+  alias: 'Melding: Batterijen bijna leeg'
+  description: Stuurt een Telegram bericht wanneer een batterij onder de 20% komt,
+    zonder telefoons.
+  triggers:
+  - at: '10:00:00'
+    trigger: time
+  conditions:
+  - condition: template
+    value_template: "{% set threshold = 20 %} {% set batterijen = states.sensor \n
+      \ | selectattr('attributes.device_class', 'defined')\n  | selectattr('attributes.device_class',
+      'eq', 'battery')\n  | rejectattr('entity_id', 'search', 'phone|battery_level|mobile')\n
+      \ | map(attribute='state')\n  | select('is_number')\n  | map('int')\n  | select('lt',
+      threshold)\n  | list %}\n{{ batterijen | count > 0 }}"
+  actions:
+  - action: telegram_bot.send_message
+    data:
+      chat_id: '-1001731338740'
+      message_thread_id: '44275'
+      parse_mode: html
+      title: <b>Vervangen batterijen</b>
+      message: "De volgende batterijen moeten worden vervangen: {%- set threshold
+        = 20 -%} {%- set ns = namespace(sensors=[]) -%} {%- for state in states.sensor
+        \n    | selectattr('attributes.device_class', 'defined') \n    | selectattr('attributes.device_class',
+        'eq', 'battery') -%}\n  {%- if state.state | is_number and state.state | int
+        < threshold \n      and not (state.entity_id is search('phone|battery_level|mobile'))
+        -%}\n    {%- set ns.sensors = ns.sensors + [state.name ~ ' (' ~ state.state
+        ~ '%)'] -%}\n  {%- endif -%}\n{%- endfor %}\n- {{ ns.sensors | join('\\n-
+        ') }}"
+  mode: single

@@ -1,0 +1,4081 @@
+views:
+  - title: Home
+    type: sections
+    sections:
+      - cards:
+          - type: horizontal-stack
+            cards:
+              - type: conditional
+                conditions:
+                  - entity: sensor.twente_milieu_packages_waste_pickup
+                    state_not: None
+                  - entity: sensor.twente_milieu_packages_waste_pickup
+                    state_not: unknown
+                card:
+                  type: custom:button-card
+                  entity: sensor.twente_milieu_packages_waste_pickup
+                  aspect_ratio: 1.5/1
+                  show_name: false
+                  styles:
+                    card:
+                      - background-color: '#161616'
+                      - border-radius: 20px
+                      - border: 1px solid '#2a2a2a'
+                    icon:
+                      - width: 45%
+                      - color: |
+                          [[[
+                            const nu = new Date().setHours(0,0,0,0);
+                            const d1 = (new Date(states['sensor.twente_milieu_packages_waste_pickup']?.state).setHours(0,0,0,0) - nu) / 864e5;
+                            const d2 = (new Date(states['sensor.twente_milieu_organic_waste_pickup']?.state).setHours(0,0,0,0) - nu) / 864e5;
+                            const d3 = (new Date(states['sensor.twente_milieu_paper_waste_pickup']?.state).setHours(0,0,0,0) - nu) / 864e5;
+                            
+                            let kleuren = [];
+                            if (d1 === 0 || d1 === 1) kleuren.push('#ffa500');
+                            if (d2 === 0 || d2 === 1) kleuren.push('#00FF00');
+                            if (d3 === 0 || d3 === 1) kleuren.push('#00d4ff');
+
+                            if (kleuren.length === 1) return kleuren[0];
+                            if (kleuren.length >= 2) return 'white'; 
+                            return '#3d3d3d';
+                          ]]]
+                      - background-image: |
+                          [[[
+                            const nu = new Date().setHours(0,0,0,0);
+                            const d1 = (new Date(states['sensor.twente_milieu_packages_waste_pickup']?.state).setHours(0,0,0,0) - nu) / 864e5;
+                            const d2 = (new Date(states['sensor.twente_milieu_organic_waste_pickup']?.state).setHours(0,0,0,0) - nu) / 864e5;
+                            const d3 = (new Date(states['sensor.twente_milieu_paper_waste_pickup']?.state).setHours(0,0,0,0) - nu) / 864e5;
+                            
+                            let kleuren = [];
+                            if (d1 === 0 || d1 === 1) kleuren.push('#ffa500');
+                            if (d2 === 0 || d2 === 1) kleuren.push('#00FF00');
+                            if (d3 === 0 || d3 === 1) kleuren.push('#00d4ff');
+
+                            if (kleuren.length >= 2) {
+                              return `linear-gradient(to bottom, ${kleuren[0]} 0%, ${kleuren[0]} 50%, ${kleuren[1]} 50%, ${kleuren[1]} 100%)`;
+                            }
+                            return 'none';
+                          ]]]
+                      - '-webkit-background-clip': text
+                      - '-webkit-text-fill-color': |
+                          [[[
+                            const nu = new Date().setHours(0,0,0,0);
+                            const d1 = (new Date(states['sensor.twente_milieu_packages_waste_pickup']?.state).setHours(0,0,0,0) - nu) / 864e5;
+                            const d2 = (new Date(states['sensor.twente_milieu_organic_waste_pickup']?.state).setHours(0,0,0,0) - nu) / 864e5;
+                            const d3 = (new Date(states['sensor.twente_milieu_paper_waste_pickup']?.state).setHours(0,0,0,0) - nu) / 864e5;
+                            let actief = (d1===0||d1===1?1:0) + (d2===0||d2===1?1:0) + (d3===0||d3===1?1:0);
+                            return actief >= 2 ? 'transparent' : 'inherit';
+                          ]]]
+                    custom_fields:
+                      status:
+                        - position: absolute
+                        - bottom: 5%
+                        - left: 50%
+                        - transform: translateX(-50%)
+                        - width: 100%
+                        - font-size: 10px
+                        - font-weight: bold
+                        - line-height: 1.2
+                  icon: |
+                    [[[
+                      const nu = new Date().setHours(0,0,0,0);
+                      const d1 = (new Date(states['sensor.twente_milieu_packages_waste_pickup']?.state).setHours(0,0,0,0) - nu) / 864e5;
+                      const d2 = (new Date(states['sensor.twente_milieu_organic_waste_pickup']?.state).setHours(0,0,0,0) - nu) / 864e5;
+                      const d3 = (new Date(states['sensor.twente_milieu_paper_waste_pickup']?.state).setHours(0,0,0,0) - nu) / 864e5;
+                      
+                      let c = 0;
+                      let i = 'mdi:delete-empty';
+                      if (d1 === 0 || d1 === 1) { c++; i = 'mdi:recycle'; }
+                      if (d2 === 0 || d2 === 1) { c++; i = 'mdi:leaf'; }
+                      if (d3 === 0 || d3 === 1) { c++; i = 'mdi:file-document-outline'; }
+                      
+                      return c > 1 ? 'mdi:delete-restore' : i;
+                    ]]]
+                  custom_fields:
+                    status: |
+                      [[[
+                        const nu = new Date().setHours(0,0,0,0);
+                        const d1 = (new Date(states['sensor.twente_milieu_packages_waste_pickup']?.state).setHours(0,0,0,0) - nu) / 864e5;
+                        const d2 = (new Date(states['sensor.twente_milieu_organic_waste_pickup']?.state).setHours(0,0,0,0) - nu) / 864e5;
+                        const d3 = (new Date(states['sensor.twente_milieu_paper_waste_pickup']?.state).setHours(0,0,0,0) - nu) / 864e5;
+                        
+                        let res = "";
+                        if (d1 === 0 || d1 === 1) res += `<div style="color: #ffa500;">PMD - ${d1 === 0 ? 'VANDAAG' : 'MORGEN'}</div>`;
+                        if (d2 === 0 || d2 === 1) res += `<div style="color: #00FF00;">GFT - ${d2 === 0 ? 'VANDAAG' : 'MORGEN'}</div>`;
+                        if (d3 === 0 || d3 === 1) res += `<div style="color: #00d4ff;">PAPIER - ${d3 === 0 ? 'VANDAAG' : 'MORGEN'}</div>`;
+                        return res;
+                      ]]]
+              - type: custom:button-card
+                entity: input_text.dogwalkinglist
+                icon: mdi:dog-side
+                aspect_ratio: 1.5/1
+                show_name: false
+                show_state: false
+                styles:
+                  card:
+                    - background-color: '#161616'
+                    - border-radius: 20px
+                    - border: 2px solid
+                    - border-color: |
+                        [[[
+                          const s = entity.state.toLowerCase();
+                          if (s.includes('daan')) return '#0000FF';
+                          if (s.includes('eva')) return '#FF0000';
+                          if (s.includes('papa') || s.includes('mama')) return '#008000';
+                          return '#2a2a2a';
+                        ]]]
+                    - padding: 5px
+                  grid:
+                    - grid-template-areas: '"i" "ochtend" "middag" "avond"'
+                    - grid-template-columns: 1fr
+                    - grid-template-rows: 1fr min-content min-content min-content
+                  icon:
+                    - width: 25%
+                    - color: |
+                        [[[
+                          const s = entity.state.toLowerCase();
+                          if (s.includes('daan')) return '#0000FF';
+                          if (s.includes('eva')) return '#FF0000';
+                          if (s.includes('papa') || s.includes('mama')) return '#008000';
+                          return '#ffa500';
+                        ]]]
+                    - grid-area: i
+                    - filter: |
+                        [[[
+                          const s = entity.state.toLowerCase();
+                          let color = '';
+                          if (s.includes('daan')) color = '#0000FF';
+                          else if (s.includes('eva')) color = '#FF0000';
+                          else if (s.includes('papa') || s.includes('mama')) color = '#008000';
+                          else return 'none';
+                          return `drop-shadow(0px 0px 5px ${color})`;
+                        ]]]
+                  custom_fields:
+                    ochtend:
+                      - justify-self: center
+                      - align-self: center
+                      - width: 90%
+                    middag:
+                      - justify-self: center
+                      - align-self: center
+                      - width: 90%
+                    avond:
+                      - justify-self: center
+                      - align-self: center
+                      - width: 90%
+                custom_fields:
+                  ochtend: |
+                    [[[
+                      const lijst = states['input_text.dogwalkingschedule']?.state.split(',') || [];
+                      let tekst = lijst[0] ? lijst[0].trim() : 'Onbekend';
+                      const isActief = entity.state.toLowerCase().includes(tekst.toLowerCase().replace('ochtend: ', '')) && entity.state !== 'Niemand';
+                      const kleur = isActief ? '#ffffff' : '#404040';
+                      const border = isActief ? '1px solid rgba(255,255,255,0.3)' : '1px solid transparent';
+                      const bg = isActief ? 'rgba(255,255,255,0.05)' : 'transparent';
+                      return `<div style="color: ${kleur}; font-size: 11px; font-weight: ${isActief ? 'bold' : 'normal'}; border: ${border}; background-color: ${bg}; border-radius: 4px; padding: 2px 4px; text-align: center;">${tekst}</div>`;
+                    ]]]
+                  middag: |
+                    [[[
+                      const lijst = states['input_text.dogwalkingschedule']?.state.split(',') || [];
+                      let tekst = lijst[1] ? lijst[1].trim() : 'Onbekend';
+                      const isActief = entity.state.toLowerCase().includes(tekst.toLowerCase().replace('middag: ', '')) && entity.state !== 'Niemand';
+                      const kleur = isActief ? '#ffffff' : '#404040';
+                      const border = isActief ? '1px solid rgba(255,255,255,0.3)' : '1px solid transparent';
+                      const bg = isActief ? 'rgba(255,255,255,0.05)' : 'transparent';
+                      return `<div style="color: ${kleur}; font-size: 11px; font-weight: ${isActief ? 'bold' : 'normal'}; border: ${border}; background-color: ${bg}; border-radius: 4px; padding: 2px 4px; text-align: center;">${tekst}</div>`;
+                    ]]]
+                  avond: |
+                    [[[
+                      const lijst = states['input_text.dogwalkingschedule']?.state.split(',') || [];
+                      let tekst = lijst[2] ? lijst[2].trim() : 'Onbekend';
+                      const isActief = entity.state.toLowerCase().includes(tekst.toLowerCase().replace('avond: ', '')) && entity.state !== 'Niemand';
+                      const kleur = isActief ? '#ffffff' : '#404040';
+                      const border = isActief ? '1px solid rgba(255,255,255,0.3)' : '1px solid transparent';
+                      const bg = isActief ? 'rgba(255,255,255,0.05)' : 'transparent';
+                      return `<div style="color: ${kleur}; font-size: 11px; font-weight: ${isActief ? 'bold' : 'normal'}; border: ${border}; background-color: ${bg}; border-radius: 4px; padding: 2px 4px; text-align: center;">${tekst}</div>`;
+                    ]]]
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              - type: custom:button-card
+                entity: input_boolean.warmtepomp_handmatige_activatie
+                icon: mdi:rocket-launch
+                aspect_ratio: 1.5/1
+                name: Boost
+                show_name: true
+                styles:
+                  card:
+                    - background-color: '#161616'
+                    - border-radius: 20px
+                    - border: 1px solid '#2a2a2a'
+                  icon:
+                    - width: 40%
+                    - color: >-
+                        [[[ return entity.state === 'on' ? '#00d4ff' :
+                        '#3d3d3d'; ]]]
+                  name:
+                    - font-size: 12px
+                    - color: '#B5B5B5'
+                    - font-weight: bold
+                state:
+                  - value: 'on'
+                    styles:
+                      card:
+                        - border: 1px solid '#00d4ff'
+              - type: custom:button-card
+                entity: sensor.showertime
+                icon: mdi:shower-head
+                aspect_ratio: 1.5/1
+                show_name: false
+                show_state: true
+                styles:
+                  card:
+                    - background-color: '#161616'
+                    - border-radius: 20px
+                    - border: 1px solid '#2a2a2a'
+                  icon:
+                    - width: 40%
+                    - color: >-
+                        [[[ return states['input_boolean.warmtepompboost'].state
+                        === 'on' ? '#ff4d4d' : '#00d4ff'; ]]]
+                    - animation: |
+                        [[[ 
+                          return states['input_boolean.warmtepompboost'].state === 'on' 
+                          ? 'pulse_red 2s infinite' 
+                          : 'none'; 
+                        ]]]
+                  state:
+                    - font-size: 14px
+                    - font-weight: bold
+                    - color: '#B5B5B5'
+                extra_styles: |
+                  @keyframes pulse_red {
+                    0% { transform: scale(1); filter: drop-shadow(0 0 2px #ff4d4d); }
+                    50% { transform: scale(1.1); filter: drop-shadow(0 0 12px #ff4d4d); }
+                    100% { transform: scale(1); filter: drop-shadow(0 0 2px #ff4d4d); }
+                  }
+              - type: custom:button-card
+                entity: input_boolean.vaatwassergevuld
+                icon: mdi:dishwasher
+                aspect_ratio: 1.5/1
+                show_name: false
+                show_label: true
+                styles:
+                  card:
+                    - background-color: '#161616'
+                    - border-radius: 20px
+                    - border: 1px solid '#2a2a2a'
+                    - position: relative
+                  grid:
+                    - grid-template-areas: '"prog_status" "i" "l"'
+                    - grid-template-rows: 25% 1fr min-content
+                  icon:
+                    - width: 40%
+                    - color: >-
+                        [[[ return entity.state === 'on' ? '#00d4ff' :
+                        '#3d3d3d'; ]]]
+                    - filter: >-
+                        [[[ return entity.state === 'on' ? 'drop-shadow(0 0 8px
+                        #00d4ff)' : 'none'; ]]]
+                  label:
+                    - font-size: 12px
+                    - color: '#B5B5B5'
+                    - font-weight: bold
+                    - padding-bottom: 10px
+                  custom_fields:
+                    prog_status:
+                      - align-self: start
+                      - justify-self: center
+                      - font-size: 13px
+                      - font-weight: bold
+                      - color: '#00d4ff'
+                      - padding-top: 10px
+                    snel:
+                      - position: absolute
+                      - top: 12%
+                      - right: 10%
+                    eco:
+                      - position: absolute
+                      - bottom: 20%
+                      - right: 10%
+                custom_fields:
+                  prog_status: |
+                    [[[
+                      const isSnel = states['input_boolean.vaatwassersnelprog'].state === 'on';
+                      const isEco = states['input_boolean.vaatwasserecoprog'].state === 'on';
+                      if (isSnel) return "SNEL";
+                      if (isEco) return "ECO";
+                      return "GEEN";
+                    ]]]
+                  snel:
+                    card:
+                      type: custom:button-card
+                      entity: input_boolean.vaatwassersnelprog
+                      icon: mdi:flash
+                      show_name: false
+                      styles:
+                        card:
+                          - width: 34px
+                          - height: 34px
+                          - border-radius: 8px
+                          - border: >-
+                              [[[ return entity.state === 'on' ? '2px solid
+                              #ffa500' : '1px solid #2a2a2a'; ]]]
+                          - background-color: >-
+                              [[[ return entity.state === 'on' ? 'rgba(255, 165,
+                              0, 0.2)' : '#101010'; ]]]
+                          - filter: >-
+                              [[[ return entity.state === 'on' ? 'none' :
+                              'grayscale(100%) opacity(0.5)'; ]]]
+                        icon:
+                          - width: 22px
+                          - color: >-
+                              [[[ return entity.state === 'on' ? '#ffa500' :
+                              '#444'; ]]]
+                  eco:
+                    card:
+                      type: custom:button-card
+                      entity: input_boolean.vaatwasserecoprog
+                      icon: mdi:leaf
+                      show_name: false
+                      styles:
+                        card:
+                          - width: 34px
+                          - height: 34px
+                          - border-radius: 8px
+                          - border: >-
+                              [[[ return entity.state === 'on' ? '2px solid
+                              #00ff96' : '1px solid #2a2a2a'; ]]]
+                          - background-color: >-
+                              [[[ return entity.state === 'on' ? 'rgba(0, 255,
+                              150, 0.15)' : '#101010'; ]]]
+                          - filter: >-
+                              [[[ return entity.state === 'on' ? 'none' :
+                              'grayscale(100%) opacity(0.5)'; ]]]
+                        icon:
+                          - width: 20px
+                          - color: >-
+                              [[[ return entity.state === 'on' ? '#00ff96' :
+                              '#444'; ]]]
+                label: |
+                  [[[
+                    const gevuld = entity.state === 'on';
+                    const progress = states['sensor.012030387010009525_bsh_common_option_programprogress']?.state;
+                    
+                    // We gebruiken nu de input_datetime helper
+                    const starttijd_state = states['input_datetime.vaatwasser_geplande_starttijd'];
+                    
+                    // 1. Tijdens het draaien
+                    if (progress > 0 && progress < 100) {
+                        return `Bezig: ${progress}%`;
+                    }
+                    
+                    // 2. Uit-stand
+                    if (!gevuld) return 'Vaatwasser UIT';
+
+                    // 3. Starttijd uit de helper halen
+                    if (starttijd_state) {
+                        // We pakken de uren en minuten direct uit de attributen van de helper
+                        const uren = String(starttijd_state.attributes.hour).padStart(2, '0');
+                        const minuten = String(starttijd_state.attributes.minute).padStart(2, '0');
+                        
+                        // Check of de helper wel een geldige tijd heeft (niet 00:00 tenzij dat echt de bedoeling is)
+                        if (starttijd_state.state === '1970-01-01 00:00:00') return "Berekenen...";
+                        
+                        return `Start om ${uren}:${minuten}`;
+                    }
+
+                    return "Wachten op planning...";
+                  ]]]
+              - type: custom:button-card
+                entity: input_text.warmtepomp_actieve_regel
+                icon: mdi:heat-pump
+                aspect_ratio: 1.5/1
+                show_name: false
+                show_state: true
+                tap_action:
+                  action: navigate
+                  navigation_path: warmtepomp-status
+                hold_action:
+                  action: more-info
+                styles:
+                  card:
+                    - background-color: '#161616'
+                    - border-radius: 20px
+                    - border: 1px solid "#2a2a2a"
+                  icon:
+                    - width: 40%
+                    - color: |
+                        [[[
+                          if (!entity || !entity.state || entity.state === 'unknown') return '#00d4ff';
+                          const s = entity.state.toLowerCase();
+                          if (s.includes('negatief')) return '#00ff96';
+                          if (s.includes('laden')) return '#00d4ff';
+                          if (s.includes('besparen')) return '#ff4d4d';
+                          if (s.includes('zon')) return '#ffcc00';
+                          return '#00d4ff';
+                        ]]]
+                  state:
+                    - font-size: 14px
+                    - font-weight: bold
+                    - color: '#B5B5B5'
+      - cards:
+          - type: horizontal-stack
+            cards:
+              - type: energy-grid-neutrality-gauge
+              - type: vertical-stack
+                cards:
+                  - type: custom:mushroom-entity-card
+                    entity: sensor.p1_meter_3c39e72a40ce_active_power
+                    icon: mdi:flash
+                    primary_info: state
+                    secondary_info: name
+                    name: Meterkast
+                    tap_action:
+                      action: navigate
+                      navigation_path: /tablet-dashboard/klimaat_energie
+                    card_mod:
+                      style: |
+                        ha-card {
+                          background-color: #161616 !important;
+                          border-radius: 20px !important;
+                          box-shadow: none !important;
+                          transition: border 0.4s ease-in-out, box-shadow 0.4s ease-in-out;
+                          
+                          {% set verbruik = states('sensor.p1_meter_3c39e72a40ce_active_power') | float %}
+                          
+                          {% if verbruik < 1500 %}
+                            border: 1px solid rgba(76, 175, 80, 0.7) !important;
+                            box-shadow: 0 0 10px rgba(76, 175, 80, 0.1) !important;
+                            --card-mod-icon-color: #4caf50;
+                          {% elif verbruik < 3000 %}
+                            border: 1px solid rgba(255, 165, 0, 0.7) !important;
+                            box-shadow: 0 0 10px rgba(255, 165, 0, 0.1) !important;
+                            --card-mod-icon-color: #ffa500;
+                          {% else %}
+                            border: 1px solid rgba(244, 67, 54, 0.7) !important;
+                            box-shadow: 0 0 15px rgba(244, 67, 54, 0.2) !important;
+                            --card-mod-icon-color: #f44336;
+                          {% endif %}
+                        }
+                  - type: custom:mushroom-entity-card
+                    entity: sensor.solax_huis_today
+                    name: Zonnepanelen
+                    icon: mdi:solar-power
+                    primary_info: state
+                    secondary_info: name
+                    card_mod:
+                      style: |
+                        ha-card {
+                          background-color: #161616 !important;
+                          border-radius: 20px !important;
+                          box-shadow: none !important;
+                          transition: border 0.4s ease-in-out, box-shadow 0.4s ease-in-out;
+                          
+                          {% set opbrengst = states('sensor.solax_huis_today') | float %}
+                          
+                          {% if opbrengst < 2 %}
+                            border: 1px solid rgba(181, 181, 181, 0.3) !important;
+                            --card-mod-icon-color: #b5b5b5;
+                          {% elif opbrengst < 25 %}
+                            border: 1px solid rgba(0, 212, 255, 0.6) !important;
+                            box-shadow: 0 0 10px rgba(0, 212, 255, 0.1) !important;
+                            --card-mod-icon-color: #00d4ff;
+                          {% else %}
+                            border: 1px solid rgba(255, 215, 0, 0.7) !important;
+                            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2) !important;
+                            --card-mod-icon-color: #ffd700;
+                          {% endif %}
+                        }
+          - type: vertical-stack
+            layout_options:
+              grid_columns: full
+            cards:
+              - type: custom:apexcharts-card
+                graph_span: 48h
+                update_interval: 1h
+                style: |
+                  ha-card {
+                    background-color: transparant !important;
+                    border: none !important;
+                    box-shadow: none !important;
+                  }
+                apex_config:
+                  chart:
+                    height: 280px
+                    background: transparant
+                    foreColor: '#999'
+                    fontFamily: Roboto, sans-serif
+                    toolbar:
+                      show: false
+                  legend:
+                    show: true
+                    position: bottom
+                    labels:
+                      colors: '#B5B5B5'
+                  grid:
+                    borderColor: '#2a2a2a'
+                    strokeDashArray: 4
+                show:
+                  last_updated: false
+                span:
+                  start: day
+                header:
+                  show: true
+                  title: Stroomprijs & Zon
+                  show_states: true
+                  colorize_states: true
+                yaxis:
+                  - id: price
+                    decimals: 2
+                    apex_config:
+                      title:
+                        text: ct/kWh
+                        style:
+                          color: '#B5B5B5'
+                  - id: solar
+                    opposite: true
+                    decimals: 0
+                    apex_config:
+                      title:
+                        text: Watt
+                        style:
+                          color: '#B5B5B5'
+                now:
+                  show: true
+                  color: '#ff4d4d'
+                  label: Nu
+                series:
+                  - entity: sensor.rob_smienk_elektriciteitsprijs
+                    name: Electra prijs
+                    yaxis_id: price
+                    color: '#ffa500'
+                    type: area
+                    curve: stepline
+                    stroke_width: 2
+                    opacity: 0.3
+                    show:
+                      legend_value: true
+                    data_generator: |
+                      var xnow = moment().startOf("day").add("days", 2); 
+                      var strtwoday = xnow.format("YYYY-MM-DD HH:mm:ssZ");
+                      var result = await hass.connection.sendMessagePromise({
+                          type: 'call_service',
+                          domain: 'tibber',
+                          service: 'get_prices',
+                          return_response: true,
+                          service_data: { end: strtwoday }
+                      }).then((result) => {
+                          var data = Object.values(result.response.prices)[0];
+                          return data.map((p) => { return [p.start_time, p.price * 100]; });
+                      });
+                      return result;
+                  - entity: sensor.solax_now
+                    name: Zonnestroom
+                    yaxis_id: solar
+                    color: '#00d4ff'
+                    type: line
+                    stroke_width: 3
+                    show:
+                      legend_value: true
+        column_span: 2
+    badges:
+      - type: custom:button-card
+        name: |
+          [[[
+            const date = new Date();
+            return String(date.getHours()).padStart(2, '0') + ':' + String(date.getMinutes()).padStart(2, '0');
+          ]]]
+        label: |
+          [[[
+            const d = new Date();
+            const opties = { weekday: 'long', day: 'numeric', month: 'long' };
+            return d.toLocaleDateString('nl-NL', opties);
+          ]]]
+        show_label: true
+        styles:
+          card:
+            - background-color: transparent
+            - border: none
+            - box-shadow: none
+            - padding: 20px 0px 30px 0px
+          grid:
+            - grid-template-areas: '"n" "l"'
+          name:
+            - justify-self: center
+            - font-size: 64px
+            - font-weight: 900
+            - color: '#ffffff'
+            - line-height: 1
+          label:
+            - justify-self: center
+            - font-size: 14px
+            - color: '#00d4ff'
+            - text-transform: uppercase
+            - letter-spacing: 2px
+            - margin-top: 10px
+      - type: custom:mushroom-chips-card
+        alignment: center
+        chips:
+          - type: entity
+            entity: person.rob_smienk
+            content_info: name
+            use_entity_picture: true
+            card_mod:
+              style: |
+                ha-card {
+                  --chip-background: {{ 'rgba(0, 255, 150, 0.15)' if is_state('person.rob_smienk', 'home') else 'rgba(255, 77, 77, 0.15)' }};
+                  border: 1px solid {{ '#00ff96' if is_state('person.rob_smienk', 'home') else '#ff4d4d' }} !important;
+                }
+          - type: entity
+            entity: person.kim_smienk
+            content_info: name
+            use_entity_picture: true
+            card_mod:
+              style: |
+                ha-card {
+                  --chip-background: {{ 'rgba(0, 255, 150, 0.15)' if is_state('person.kim_smienk', 'home') else 'rgba(255, 77, 77, 0.15)' }};
+                  border: 1px solid {{ '#00ff96' if is_state('person.kim_smienk', 'home') else '#ff4d4d' }} !important;
+                }
+          - type: entity
+            entity: person.eva_smienk
+            content_info: name
+            use_entity_picture: true
+            card_mod:
+              style: |
+                ha-card {
+                  --chip-background: {{ 'rgba(0, 255, 150, 0.15)' if is_state('person.eva_smienk', 'home') else 'rgba(255, 77, 77, 0.15)' }};
+                  border: 1px solid {{ '#00ff96' if is_state('person.eva_smienk', 'home') else '#ff4d4d' }} !important;
+                }
+          - type: entity
+            entity: person.daan_smienk
+            content_info: name
+            use_entity_picture: true
+            card_mod:
+              style: |
+                ha-card {
+                  --chip-background: {{ 'rgba(0, 255, 150, 0.15)' if is_state('person.daan_smienk', 'home') else 'rgba(255, 77, 77, 0.15)' }};
+                  border: 1px solid {{ '#00ff96' if is_state('person.daan_smienk', 'home') else '#ff4d4d' }} !important;
+                }
+          - type: template
+            entity: input_boolean.vakantie
+            icon: mdi:airplane
+            content: Vakantie
+            tap_action:
+              action: toggle
+            card_mod:
+              style: |
+                ha-card {
+                  --chip-background: {{ 'rgba(255, 165, 0, 0.2)' if is_state('input_boolean.vakantie', 'on') else '#161616' }};
+                  --chip-icon-color: {{ '#ffa500' if is_state('input_boolean.vakantie', 'on') else '#666' }};
+                  --chip-text-color: {{ '#ffffff' if is_state('input_boolean.vakantie', 'on') else '#B5B5B5' }};
+                  border: 1px solid {{ '#ffa500' if is_state('input_boolean.vakantie', 'on') else '#2a2a2a' }} !important;
+                }
+      - type: entity
+        show_name: true
+        show_state: true
+        show_icon: true
+        name: Alarm
+        entity: alarm_control_panel.huis
+        color: red
+    header:
+      layout: start
+      badges_position: top
+      badges_wrap: wrap
+  - type: sections
+    max_columns: 2
+    title: Verlichting
+    sections:
+      - column_span: 1
+        cards:
+          - type: heading
+            heading: Beneden
+          - type: grid
+            columns: 4
+            square: false
+            cards:
+              - type: custom:button-card
+                entity: light.woonkamer_lichten
+                name: Woonkamer
+                icon: hue:room-living
+                aspect_ratio: 1/1
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - border: 1px solid rgba(255,255,255,0.05)
+                    - background-color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return 'rgba(22, 22, 22, 0.8)';
+                          if (entity.attributes.rgb_color) {
+                            return `rgba(${entity.attributes.rgb_color[0]}, ${entity.attributes.rgb_color[1]}, ${entity.attributes.rgb_color[2]}, 0.25)`;
+                          }
+                          return 'rgba(255, 165, 0, 0.25)';
+                        ]]]
+                    - padding: 0px
+                    - overflow: hidden
+                  grid:
+                    - grid-template-areas: '"slider i chips" "slider n n"'
+                    - grid-template-columns: 22px 1fr min-content
+                    - grid-template-rows: 1fr min-content
+                  icon:
+                    - width: 75%
+                    - color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return '#444444';
+                          if (entity.attributes.rgb_color) return `rgb(${entity.attributes.rgb_color})`;
+                          return 'orange';
+                        ]]]
+                    - align-self: center
+                    - justify-self: center
+                  name:
+                    - justify-self: center
+                    - align-self: center
+                    - font-weight: 600
+                    - font-size: 11px
+                    - margin-bottom: 8px
+                    - color: |
+                        [[[
+                          return (!entity || entity.state !== 'on') ? '#777777' : 'white';
+                        ]]]
+                  custom_fields:
+                    slider:
+                      - align-self: stretch
+                    chips:
+                      - padding-right: 4px
+                      - align-self: start
+                      - margin-top: 4px
+                custom_fields:
+                  slider:
+                    card:
+                      type: custom:my-slider-v2
+                      entity: '[[[ return entity.entity_id ]]]'
+                      vertical: true
+                      styles:
+                        container:
+                          - '-background-color': rgba(255,255,255,0.03)
+                        level:
+                          - '-background-color': orange
+                  chips: |
+                    [[[
+                      if (entity && entity.state === 'on') {
+                        return `<ha-icon icon="mdi:palette" class="chip-icon" onclick="event.stopPropagation(); const e = new Event('hass-more-info', { bubbles: true }); e.detail = { entityId: '${entity.entity_id}' }; document.querySelector('home-assistant').dispatchEvent(e);"></ha-icon>
+                          <style> .chip-icon { padding: 2px; background: rgba(255,255,255,0.1); border-radius: 4px; --mdc-icon-size: 12px; cursor: pointer; pointer-events: auto; } </style>`;
+                      }
+                    ]]]
+                tap_action:
+                  action: toggle
+              - type: custom:button-card
+                entity: light.zithoek_ledstrip
+                name: Zithoek
+                icon: hue:room-lounge
+                aspect_ratio: 1/1
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - border: 1px solid rgba(255,255,255,0.05)
+                    - background-color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return 'rgba(22, 22, 22, 0.8)';
+                          if (entity.attributes.rgb_color) {
+                            return `rgba(${entity.attributes.rgb_color[0]}, ${entity.attributes.rgb_color[1]}, ${entity.attributes.rgb_color[2]}, 0.25)`;
+                          }
+                          return 'rgba(255, 165, 0, 0.25)';
+                        ]]]
+                    - padding: 0px
+                    - overflow: hidden
+                  grid:
+                    - grid-template-areas: '"slider i chips" "slider n n"'
+                    - grid-template-columns: 22px 1fr min-content
+                    - grid-template-rows: 1fr min-content
+                  icon:
+                    - width: 75%
+                    - color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return '#444444';
+                          if (entity.attributes.rgb_color) return `rgb(${entity.attributes.rgb_color})`;
+                          return 'orange';
+                        ]]]
+                    - align-self: center
+                    - justify-self: center
+                  name:
+                    - justify-self: center
+                    - align-self: center
+                    - font-weight: 600
+                    - font-size: 11px
+                    - margin-bottom: 8px
+                    - color: |
+                        [[[
+                          return (!entity || entity.state !== 'on') ? '#777777' : 'white';
+                        ]]]
+                  custom_fields:
+                    slider:
+                      - align-self: stretch
+                    chips:
+                      - padding-right: 4px
+                      - align-self: start
+                      - margin-top: 4px
+                custom_fields:
+                  slider:
+                    card:
+                      type: custom:my-slider-v2
+                      entity: light.zithoek_ledstrip
+                      vertical: true
+                  chips: |
+                    [[[
+                      if (entity && entity.state === 'on') {
+                        return `<ha-icon icon="mdi:palette" class="chip-icon" onclick="event.stopPropagation(); const e = new Event('hass-more-info', { bubbles: true }); e.detail = { entityId: '${entity.entity_id}' }; document.querySelector('home-assistant').dispatchEvent(e);"></ha-icon>
+                          <style> .chip-icon { padding: 2px; background: rgba(255,255,255,0.1); border-radius: 4px; --mdc-icon-size: 12px; cursor: pointer; pointer-events: auto; } </style>`;
+                      }
+                    ]]]
+              - type: custom:button-card
+                entity: light.schuifpui_lichten
+                name: Schuifpui
+                icon: hue:pillar-spot-3
+                aspect_ratio: 1/1
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - border: 1px solid rgba(255,255,255,0.05)
+                    - background-color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return 'rgba(22, 22, 22, 0.8)';
+                          if (entity.attributes.rgb_color) {
+                            return `rgba(${entity.attributes.rgb_color[0]}, ${entity.attributes.rgb_color[1]}, ${entity.attributes.rgb_color[2]}, 0.25)`;
+                          }
+                          return 'rgba(255, 165, 0, 0.25)';
+                        ]]]
+                    - padding: 0px
+                    - overflow: hidden
+                  grid:
+                    - grid-template-areas: '"slider i chips" "slider n n"'
+                    - grid-template-columns: 22px 1fr min-content
+                    - grid-template-rows: 1fr min-content
+                  icon:
+                    - width: 75%
+                    - color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return '#444444';
+                          if (entity.attributes.rgb_color) return `rgb(${entity.attributes.rgb_color})`;
+                          return 'orange';
+                        ]]]
+                    - align-self: center
+                    - justify-self: center
+                  name:
+                    - justify-self: center
+                    - align-self: center
+                    - font-weight: 600
+                    - font-size: 11px
+                    - margin-bottom: 8px
+                    - color: |
+                        [[[
+                          return (!entity || entity.state !== 'on') ? '#777777' : 'white';
+                        ]]]
+                  custom_fields:
+                    slider:
+                      - align-self: stretch
+                    chips:
+                      - padding-right: 4px
+                      - align-self: start
+                      - margin-top: 4px
+                custom_fields:
+                  slider:
+                    card:
+                      type: custom:my-slider-v2
+                      entity: light.schuifpui_lichten
+                      vertical: true
+                  chips: |
+                    [[[
+                      if (entity && entity.state === 'on') {
+                        return `<ha-icon icon="mdi:palette" class="chip-icon" onclick="event.stopPropagation(); const e = new Event('hass-more-info', { bubbles: true }); e.detail = { entityId: '${entity.entity_id}' }; document.querySelector('home-assistant').dispatchEvent(e);"></ha-icon>
+                          <style> .chip-icon { padding: 2px; background: rgba(255,255,255,0.1); border-radius: 4px; --mdc-icon-size: 12px; cursor: pointer; pointer-events: auto; } </style>`;
+                      }
+                    ]]]
+              - type: custom:button-card
+                entity: light.keuken_lichten
+                name: Keuken
+                icon: hue:room-kitchen
+                aspect_ratio: 1/1
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - border: 1px solid rgba(255,255,255,0.05)
+                    - background-color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return 'rgba(22, 22, 22, 0.8)';
+                          if (entity.attributes.rgb_color) {
+                            return `rgba(${entity.attributes.rgb_color[0]}, ${entity.attributes.rgb_color[1]}, ${entity.attributes.rgb_color[2]}, 0.25)`;
+                          }
+                          return 'rgba(255, 165, 0, 0.25)';
+                        ]]]
+                    - padding: 0px
+                    - overflow: hidden
+                  grid:
+                    - grid-template-areas: '"slider i chips" "slider n n"'
+                    - grid-template-columns: 22px 1fr min-content
+                    - grid-template-rows: 1fr min-content
+                  icon:
+                    - width: 75%
+                    - color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return '#444444';
+                          if (entity.attributes.rgb_color) return `rgb(${entity.attributes.rgb_color})`;
+                          return 'orange';
+                        ]]]
+                    - align-self: center
+                    - justify-self: center
+                  name:
+                    - justify-self: center
+                    - align-self: center
+                    - font-weight: 600
+                    - font-size: 11px
+                    - margin-bottom: 8px
+                    - color: |
+                        [[[
+                          return (!entity || entity.state !== 'on') ? '#777777' : 'white';
+                        ]]]
+                  custom_fields:
+                    slider:
+                      - align-self: stretch
+                    chips:
+                      - padding-right: 4px
+                      - align-self: start
+                      - margin-top: 4px
+                custom_fields:
+                  slider:
+                    card:
+                      type: custom:my-slider-v2
+                      entity: light.keuken_lichten
+                      vertical: true
+                  chips: |
+                    [[[
+                      if (entity && entity.state === 'on') {
+                        return `<ha-icon icon="mdi:palette" class="chip-icon" onclick="event.stopPropagation(); const e = new Event('hass-more-info', { bubbles: true }); e.detail = { entityId: '${entity.entity_id}' }; document.querySelector('home-assistant').dispatchEvent(e);"></ha-icon>
+                          <style> .chip-icon { padding: 2px; background: rgba(255,255,255,0.1); border-radius: 4px; --mdc-icon-size: 12px; cursor: pointer; pointer-events: auto; } </style>`;
+                      }
+                    ]]]
+              - type: custom:button-card
+                entity: light.lamp_eetkamer
+                name: Eetkamer
+                icon: hue:room-dining
+                aspect_ratio: 1/1
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - border: 1px solid rgba(255,255,255,0.05)
+                    - background-color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return 'rgba(22, 22, 22, 0.8)';
+                          if (entity.attributes.rgb_color) {
+                            return `rgba(${entity.attributes.rgb_color[0]}, ${entity.attributes.rgb_color[1]}, ${entity.attributes.rgb_color[2]}, 0.25)`;
+                          }
+                          return 'rgba(255, 165, 0, 0.25)';
+                        ]]]
+                    - padding: 0px
+                    - overflow: hidden
+                  grid:
+                    - grid-template-areas: '"slider i chips" "slider n n"'
+                    - grid-template-columns: 22px 1fr min-content
+                    - grid-template-rows: 1fr min-content
+                  icon:
+                    - width: 75%
+                    - color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return '#444444';
+                          if (entity.attributes.rgb_color) return `rgb(${entity.attributes.rgb_color})`;
+                          return 'orange';
+                        ]]]
+                    - align-self: center
+                    - justify-self: center
+                  name:
+                    - justify-self: center
+                    - align-self: center
+                    - font-weight: 600
+                    - font-size: 11px
+                    - margin-bottom: 8px
+                    - color: |
+                        [[[
+                          return (!entity || entity.state !== 'on') ? '#777777' : 'white';
+                        ]]]
+                  custom_fields:
+                    slider:
+                      - align-self: stretch
+                    chips:
+                      - padding-right: 4px
+                      - align-self: start
+                      - margin-top: 4px
+                custom_fields:
+                  slider:
+                    card:
+                      type: custom:my-slider-v2
+                      entity: light.lamp_eetkamer
+                      vertical: true
+                  chips: |
+                    [[[
+                      if (entity && entity.state === 'on') {
+                        return `<ha-icon icon="mdi:palette" class="chip-icon" onclick="event.stopPropagation(); const e = new Event('hass-more-info', { bubbles: true }); e.detail = { entityId: '${entity.entity_id}' }; document.querySelector('home-assistant').dispatchEvent(e);"></ha-icon>
+                          <style> .chip-icon { padding: 2px; background: rgba(255,255,255,0.1); border-radius: 4px; --mdc-icon-size: 12px; cursor: pointer; pointer-events: auto; } </style>`;
+                      }
+                    ]]]
+              - type: custom:button-card
+                entity: light.hal_lichten
+                name: Hal
+                icon: hue:room-hallway
+                aspect_ratio: 1/1
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - border: 1px solid rgba(255,255,255,0.05)
+                    - background-color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return 'rgba(22, 22, 22, 0.8)';
+                          if (entity.attributes.rgb_color) {
+                            return `rgba(${entity.attributes.rgb_color[0]}, ${entity.attributes.rgb_color[1]}, ${entity.attributes.rgb_color[2]}, 0.25)`;
+                          }
+                          return 'rgba(255, 165, 0, 0.25)';
+                        ]]]
+                    - padding: 0px
+                    - overflow: hidden
+                  grid:
+                    - grid-template-areas: '"slider i chips" "slider n n"'
+                    - grid-template-columns: 22px 1fr min-content
+                    - grid-template-rows: 1fr min-content
+                  icon:
+                    - width: 75%
+                    - color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return '#444444';
+                          if (entity.attributes.rgb_color) return `rgb(${entity.attributes.rgb_color})`;
+                          return 'orange';
+                        ]]]
+                    - align-self: center
+                    - justify-self: center
+                  name:
+                    - justify-self: center
+                    - align-self: center
+                    - font-weight: 600
+                    - font-size: 11px
+                    - margin-bottom: 8px
+                    - color: |
+                        [[[
+                          return (!entity || entity.state !== 'on') ? '#777777' : 'white';
+                        ]]]
+                  custom_fields:
+                    slider:
+                      - align-self: stretch
+                    chips:
+                      - padding-right: 4px
+                      - align-self: start
+                      - margin-top: 4px
+                custom_fields:
+                  slider:
+                    card:
+                      type: custom:my-slider-v2
+                      entity: light.hal_lichten
+                      vertical: true
+                  chips: |
+                    [[[
+                      if (entity && entity.state === 'on') {
+                        return `<ha-icon icon="mdi:palette" class="chip-icon" onclick="event.stopPropagation(); const e = new Event('hass-more-info', { bubbles: true }); e.detail = { entityId: '${entity.entity_id}' }; document.querySelector('home-assistant').dispatchEvent(e);"></ha-icon>
+                          <style> .chip-icon { padding: 2px; background: rgba(255,255,255,0.1); border-radius: 4px; --mdc-icon-size: 12px; cursor: pointer; pointer-events: auto; } </style>`;
+                      }
+                    ]]]
+              - type: custom:button-card
+                entity: light.kantoor_lichten
+                name: Kantoor
+                icon: hue:room-office
+                aspect_ratio: 1/1
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - border: 1px solid rgba(255,255,255,0.05)
+                    - background-color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return 'rgba(22, 22, 22, 0.8)';
+                          if (entity.attributes.rgb_color) {
+                            return `rgba(${entity.attributes.rgb_color[0]}, ${entity.attributes.rgb_color[1]}, ${entity.attributes.rgb_color[2]}, 0.25)`;
+                          }
+                          return 'rgba(255, 165, 0, 0.25)';
+                        ]]]
+                    - padding: 0px
+                    - overflow: hidden
+                  grid:
+                    - grid-template-areas: '"slider i chips" "slider n n"'
+                    - grid-template-columns: 22px 1fr min-content
+                    - grid-template-rows: 1fr min-content
+                  icon:
+                    - width: 75%
+                    - color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return '#444444';
+                          if (entity.attributes.rgb_color) return `rgb(${entity.attributes.rgb_color})`;
+                          return 'orange';
+                        ]]]
+                    - align-self: center
+                    - justify-self: center
+                  name:
+                    - justify-self: center
+                    - align-self: center
+                    - font-weight: 600
+                    - font-size: 11px
+                    - margin-bottom: 8px
+                    - color: |
+                        [[[
+                          return (!entity || entity.state !== 'on') ? '#777777' : 'white';
+                        ]]]
+                  custom_fields:
+                    slider:
+                      - align-self: stretch
+                    chips:
+                      - padding-right: 4px
+                      - align-self: start
+                      - margin-top: 4px
+                custom_fields:
+                  slider:
+                    card:
+                      type: custom:my-slider-v2
+                      entity: light.kantoor_lichten
+                      vertical: true
+                  chips: |
+                    [[[
+                      if (entity && entity.state === 'on') {
+                        return `<ha-icon icon="mdi:palette" class="chip-icon" onclick="event.stopPropagation(); const e = new Event('hass-more-info', { bubbles: true }); e.detail = { entityId: '${entity.entity_id}' }; document.querySelector('home-assistant').dispatchEvent(e);"></ha-icon>
+                          <style> .chip-icon { padding: 2px; background: rgba(255,255,255,0.1); border-radius: 4px; --mdc-icon-size: 12px; cursor: pointer; pointer-events: auto; } </style>`;
+                      }
+                    ]]]
+      - column_span: 1
+        cards:
+          - type: heading
+            heading: Boven
+          - type: grid
+            columns: 4
+            square: false
+            cards:
+              - type: custom:button-card
+                entity: light.master_lichten
+                name: Master
+                icon: hue:room-bedroom
+                aspect_ratio: 1/1
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - border: 1px solid rgba(255,255,255,0.05)
+                    - background-color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return 'rgba(22, 22, 22, 0.8)';
+                          if (entity.attributes.rgb_color) {
+                            return `rgba(${entity.attributes.rgb_color[0]}, ${entity.attributes.rgb_color[1]}, ${entity.attributes.rgb_color[2]}, 0.25)`;
+                          }
+                          return 'rgba(255, 165, 0, 0.25)';
+                        ]]]
+                    - padding: 0px
+                    - overflow: hidden
+                  grid:
+                    - grid-template-areas: '"slider i chips" "slider n n"'
+                    - grid-template-columns: 22px 1fr min-content
+                    - grid-template-rows: 1fr min-content
+                  icon:
+                    - width: 75%
+                    - color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return '#444444';
+                          if (entity.attributes.rgb_color) return `rgb(${entity.attributes.rgb_color})`;
+                          return 'orange';
+                        ]]]
+                    - align-self: center
+                    - justify-self: center
+                  name:
+                    - justify-self: center
+                    - align-self: center
+                    - font-weight: 600
+                    - font-size: 11px
+                    - margin-bottom: 8px
+                    - color: |
+                        [[[
+                          return (!entity || entity.state !== 'on') ? '#777777' : 'white';
+                        ]]]
+                  custom_fields:
+                    slider:
+                      - align-self: stretch
+                    chips:
+                      - padding-right: 4px
+                      - align-self: start
+                      - margin-top: 4px
+                custom_fields:
+                  slider:
+                    card:
+                      type: custom:my-slider-v2
+                      entity: light.master_lichten
+                      vertical: true
+                  chips: |
+                    [[[
+                      if (entity && entity.state === 'on') {
+                        return `<ha-icon icon="mdi:palette" class="chip-icon" onclick="event.stopPropagation(); const e = new Event('hass-more-info', { bubbles: true }); e.detail = { entityId: '${entity.entity_id}' }; document.querySelector('home-assistant').dispatchEvent(e);"></ha-icon>
+                          <style> .chip-icon { padding: 2px; background: rgba(255,255,255,0.1); border-radius: 4px; --mdc-icon-size: 12px; cursor: pointer; pointer-events: auto; } </style>`;
+                      }
+                    ]]]
+              - type: custom:button-card
+                entity: light.daan_slaapkamer_lamp
+                name: Daan
+                icon: hue:room-kids
+                aspect_ratio: 1/1
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - border: 1px solid rgba(255,255,255,0.05)
+                    - background-color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return 'rgba(22, 22, 22, 0.8)';
+                          if (entity.attributes.rgb_color) {
+                            return `rgba(${entity.attributes.rgb_color[0]}, ${entity.attributes.rgb_color[1]}, ${entity.attributes.rgb_color[2]}, 0.25)`;
+                          }
+                          return 'rgba(255, 165, 0, 0.25)';
+                        ]]]
+                    - padding: 0px
+                    - overflow: hidden
+                  grid:
+                    - grid-template-areas: '"slider i chips" "slider n n"'
+                    - grid-template-columns: 22px 1fr min-content
+                    - grid-template-rows: 1fr min-content
+                  icon:
+                    - width: 75%
+                    - color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return '#444444';
+                          if (entity.attributes.rgb_color) return `rgb(${entity.attributes.rgb_color})`;
+                          return 'orange';
+                        ]]]
+                    - align-self: center
+                    - justify-self: center
+                  name:
+                    - justify-self: center
+                    - align-self: center
+                    - font-weight: 600
+                    - font-size: 11px
+                    - margin-bottom: 8px
+                    - color: |
+                        [[[
+                          return (!entity || entity.state !== 'on') ? '#777777' : 'white';
+                        ]]]
+                  custom_fields:
+                    slider:
+                      - align-self: stretch
+                    chips:
+                      - padding-right: 4px
+                      - align-self: start
+                      - margin-top: 4px
+                custom_fields:
+                  slider:
+                    card:
+                      type: custom:my-slider-v2
+                      entity: light.daan_slaapkamer_lamp
+                      vertical: true
+                  chips: |
+                    [[[
+                      if (entity && entity.state === 'on') {
+                        return `<ha-icon icon="mdi:palette" class="chip-icon" onclick="event.stopPropagation(); const e = new Event('hass-more-info', { bubbles: true }); e.detail = { entityId: '${entity.entity_id}' }; document.querySelector('home-assistant').dispatchEvent(e);"></ha-icon>
+                          <style> .chip-icon { padding: 2px; background: rgba(255,255,255,0.1); border-radius: 4px; --mdc-icon-size: 12px; cursor: pointer; pointer-events: auto; } </style>`;
+                      }
+                    ]]]
+              - type: custom:button-card
+                entity: light.eva_slaapkamer_lamp
+                name: Eva
+                icon: hue:room-kids
+                aspect_ratio: 1/1
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - border: 1px solid rgba(255,255,255,0.05)
+                    - background-color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return 'rgba(22, 22, 22, 0.8)';
+                          if (entity.attributes.rgb_color) {
+                            return `rgba(${entity.attributes.rgb_color[0]}, ${entity.attributes.rgb_color[1]}, ${entity.attributes.rgb_color[2]}, 0.25)`;
+                          }
+                          return 'rgba(255, 165, 0, 0.25)';
+                        ]]]
+                    - padding: 0px
+                    - overflow: hidden
+                  grid:
+                    - grid-template-areas: '"slider i chips" "slider n n"'
+                    - grid-template-columns: 22px 1fr min-content
+                    - grid-template-rows: 1fr min-content
+                  icon:
+                    - width: 75%
+                    - color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return '#444444';
+                          if (entity.attributes.rgb_color) return `rgb(${entity.attributes.rgb_color})`;
+                          return 'orange';
+                        ]]]
+                    - align-self: center
+                    - justify-self: center
+                  name:
+                    - justify-self: center
+                    - align-self: center
+                    - font-weight: 600
+                    - font-size: 11px
+                    - margin-bottom: 8px
+                    - color: |
+                        [[[
+                          return (!entity || entity.state !== 'on') ? '#777777' : 'white';
+                        ]]]
+                  custom_fields:
+                    slider:
+                      - align-self: stretch
+                    chips:
+                      - padding-right: 4px
+                      - align-self: start
+                      - margin-top: 4px
+                custom_fields:
+                  slider:
+                    card:
+                      type: custom:my-slider-v2
+                      entity: light.eva_slaapkamer_lamp
+                      vertical: true
+                  chips: |
+                    [[[
+                      if (entity && entity.state === 'on') {
+                        return `<ha-icon icon="mdi:palette" class="chip-icon" onclick="event.stopPropagation(); const e = new Event('hass-more-info', { bubbles: true }); e.detail = { entityId: '${entity.entity_id}' }; document.querySelector('home-assistant').dispatchEvent(e);"></ha-icon>
+                          <style> .chip-icon { padding: 2px; background: rgba(255,255,255,0.1); border-radius: 4px; --mdc-icon-size: 12px; cursor: pointer; pointer-events: auto; } </style>`;
+                      }
+                    ]]]
+              - type: custom:button-card
+                entity: light.badkamer_lichten
+                name: Badkamer
+                icon: hue:room-bathroom
+                aspect_ratio: 1/1
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - border: 1px solid rgba(255,255,255,0.05)
+                    - background-color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return 'rgba(22, 22, 22, 0.8)';
+                          if (entity.attributes.rgb_color) {
+                            return `rgba(${entity.attributes.rgb_color[0]}, ${entity.attributes.rgb_color[1]}, ${entity.attributes.rgb_color[2]}, 0.25)`;
+                          }
+                          return 'rgba(255, 165, 0, 0.25)';
+                        ]]]
+                    - padding: 0px
+                    - overflow: hidden
+                  grid:
+                    - grid-template-areas: '"slider i chips" "slider n n"'
+                    - grid-template-columns: 22px 1fr min-content
+                    - grid-template-rows: 1fr min-content
+                  icon:
+                    - width: 75%
+                    - color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return '#444444';
+                          if (entity.attributes.rgb_color) return `rgb(${entity.attributes.rgb_color})`;
+                          return 'orange';
+                        ]]]
+                    - align-self: center
+                    - justify-self: center
+                  name:
+                    - justify-self: center
+                    - align-self: center
+                    - font-weight: 600
+                    - font-size: 11px
+                    - margin-bottom: 8px
+                    - color: |
+                        [[[
+                          return (!entity || entity.state !== 'on') ? '#777777' : 'white';
+                        ]]]
+                  custom_fields:
+                    slider:
+                      - align-self: stretch
+                    chips:
+                      - padding-right: 4px
+                      - align-self: start
+                      - margin-top: 4px
+                custom_fields:
+                  slider:
+                    card:
+                      type: custom:my-slider-v2
+                      entity: light.badkamer_lichten
+                      vertical: true
+                  chips: |
+                    [[[
+                      if (entity && entity.state === 'on') {
+                        return `<ha-icon icon="mdi:palette" class="chip-icon" onclick="event.stopPropagation(); const e = new Event('hass-more-info', { bubbles: true }); e.detail = { entityId: '${entity.entity_id}' }; document.querySelector('home-assistant').dispatchEvent(e);"></ha-icon>
+                          <style> .chip-icon { padding: 2px; background: rgba(255,255,255,0.1); border-radius: 4px; --mdc-icon-size: 12px; cursor: pointer; pointer-events: auto; } </style>`;
+                      }
+                    ]]]
+              - type: custom:button-card
+                entity: light.gameroom_lamp_1
+                name: Kantoor Rob
+                icon: hue:room-office
+                aspect_ratio: 1/1
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - border: 1px solid rgba(255,255,255,0.05)
+                    - background-color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return 'rgba(22, 22, 22, 0.8)';
+                          if (entity.attributes.rgb_color) {
+                            return `rgba(${entity.attributes.rgb_color[0]}, ${entity.attributes.rgb_color[1]}, ${entity.attributes.rgb_color[2]}, 0.25)`;
+                          }
+                          return 'rgba(255, 165, 0, 0.25)';
+                        ]]]
+                    - padding: 0px
+                    - overflow: hidden
+                  grid:
+                    - grid-template-areas: '"slider i chips" "slider n n"'
+                    - grid-template-columns: 22px 1fr min-content
+                    - grid-template-rows: 1fr min-content
+                  icon:
+                    - width: 75%
+                    - color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return '#444444';
+                          if (entity.attributes.rgb_color) return `rgb(${entity.attributes.rgb_color})`;
+                          return 'orange';
+                        ]]]
+                    - align-self: center
+                    - justify-self: center
+                  name:
+                    - justify-self: center
+                    - align-self: center
+                    - font-weight: 600
+                    - font-size: 11px
+                    - margin-bottom: 8px
+                    - color: |
+                        [[[
+                          return (!entity || entity.state !== 'on') ? '#777777' : 'white';
+                        ]]]
+                  custom_fields:
+                    slider:
+                      - align-self: stretch
+                    chips:
+                      - padding-right: 4px
+                      - align-self: start
+                      - margin-top: 4px
+                custom_fields:
+                  slider:
+                    card:
+                      type: custom:my-slider-v2
+                      entity: light.gameroom_lamp_1
+                      vertical: true
+                  chips: |
+                    [[[
+                      if (entity && entity.state === 'on') {
+                        return `<ha-icon icon="mdi:palette" class="chip-icon" onclick="event.stopPropagation(); const e = new Event('hass-more-info', { bubbles: true }); e.detail = { entityId: '${entity.entity_id}' }; document.querySelector('home-assistant').dispatchEvent(e);"></ha-icon>
+                          <style> .chip-icon { padding: 2px; background: rgba(255,255,255,0.1); border-radius: 4px; --mdc-icon-size: 12px; cursor: pointer; pointer-events: auto; } </style>`;
+                      }
+                    ]]]
+              - type: custom:button-card
+                entity: light.washok_lichten
+                name: Washok
+                icon: hue:room-laundry
+                aspect_ratio: 1/1
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - border: 1px solid rgba(255,255,255,0.05)
+                    - background-color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return 'rgba(22, 22, 22, 0.8)';
+                          if (entity.attributes.rgb_color) {
+                            return `rgba(${entity.attributes.rgb_color[0]}, ${entity.attributes.rgb_color[1]}, ${entity.attributes.rgb_color[2]}, 0.25)`;
+                          }
+                          return 'rgba(255, 165, 0, 0.25)';
+                        ]]]
+                    - padding: 0px
+                    - overflow: hidden
+                  grid:
+                    - grid-template-areas: '"slider i chips" "slider n n"'
+                    - grid-template-columns: 22px 1fr min-content
+                    - grid-template-rows: 1fr min-content
+                  icon:
+                    - width: 75%
+                    - color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return '#444444';
+                          if (entity.attributes.rgb_color) return `rgb(${entity.attributes.rgb_color})`;
+                          return 'orange';
+                        ]]]
+                    - align-self: center
+                    - justify-self: center
+                  name:
+                    - justify-self: center
+                    - align-self: center
+                    - font-weight: 600
+                    - font-size: 11px
+                    - margin-bottom: 8px
+                    - color: |
+                        [[[
+                          return (!entity || entity.state !== 'on') ? '#777777' : 'white';
+                        ]]]
+                  custom_fields:
+                    slider:
+                      - align-self: stretch
+                    chips:
+                      - padding-right: 4px
+                      - align-self: start
+                      - margin-top: 4px
+                custom_fields:
+                  slider:
+                    card:
+                      type: custom:my-slider-v2
+                      entity: light.washok_lichten
+                      vertical: true
+                  chips: |
+                    [[[
+                      if (entity && entity.state === 'on') {
+                        return `<ha-icon icon="mdi:palette" class="chip-icon" onclick="event.stopPropagation(); const e = new Event('hass-more-info', { bubbles: true }); e.detail = { entityId: '${entity.entity_id}' }; document.querySelector('home-assistant').dispatchEvent(e);"></ha-icon>
+                          <style> .chip-icon { padding: 2px; background: rgba(255,255,255,0.1); border-radius: 4px; --mdc-icon-size: 12px; cursor: pointer; pointer-events: auto; } </style>`;
+                      }
+                    ]]]
+              - type: custom:button-card
+                entity: light.zolder_1
+                name: Zolder
+                icon: hue:room-attic
+                aspect_ratio: 1/1
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - border: 1px solid rgba(255,255,255,0.05)
+                    - background-color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return 'rgba(22, 22, 22, 0.8)';
+                          if (entity.attributes.rgb_color) {
+                            return `rgba(${entity.attributes.rgb_color[0]}, ${entity.attributes.rgb_color[1]}, ${entity.attributes.rgb_color[2]}, 0.25)`;
+                          }
+                          return 'rgba(255, 165, 0, 0.25)';
+                        ]]]
+                    - padding: 0px
+                    - overflow: hidden
+                  grid:
+                    - grid-template-areas: '"slider i chips" "slider n n"'
+                    - grid-template-columns: 22px 1fr min-content
+                    - grid-template-rows: 1fr min-content
+                  icon:
+                    - width: 75%
+                    - color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return '#444444';
+                          if (entity.attributes.rgb_color) return `rgb(${entity.attributes.rgb_color})`;
+                          return 'orange';
+                        ]]]
+                    - align-self: center
+                    - justify-self: center
+                  name:
+                    - justify-self: center
+                    - align-self: center
+                    - font-weight: 600
+                    - font-size: 11px
+                    - margin-bottom: 8px
+                    - color: |
+                        [[[
+                          return (!entity || entity.state !== 'on') ? '#777777' : 'white';
+                        ]]]
+                  custom_fields:
+                    slider:
+                      - align-self: stretch
+                    chips:
+                      - padding-right: 4px
+                      - align-self: start
+                      - margin-top: 4px
+                custom_fields:
+                  slider:
+                    card:
+                      type: custom:my-slider-v2
+                      entity: light.zolder_1
+                      vertical: true
+                  chips: |
+                    [[[
+                      if (entity && entity.state === 'on') {
+                        return `<ha-icon icon="mdi:palette" class="chip-icon" onclick="event.stopPropagation(); const e = new Event('hass-more-info', { bubbles: true }); e.detail = { entityId: '${entity.entity_id}' }; document.querySelector('home-assistant').dispatchEvent(e);"></ha-icon>
+                          <style> .chip-icon { padding: 2px; background: rgba(255,255,255,0.1); border-radius: 4px; --mdc-icon-size: 12px; cursor: pointer; pointer-events: auto; } </style>`;
+                      }
+                    ]]]
+      - column_span: 1
+        cards:
+          - type: heading
+            heading: Automations
+          - type: grid
+            columns: 4
+            square: false
+            cards:
+              - type: custom:button-card
+                entity: light.wc_beneden
+                name: WC Ben.
+                icon: hue:room-toilet
+                aspect_ratio: 1/1
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - border: 1px solid rgba(255,255,255,0.05)
+                    - background-color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return 'rgba(22, 22, 22, 0.8)';
+                          if (entity.attributes.rgb_color) {
+                            return `rgba(${entity.attributes.rgb_color[0]}, ${entity.attributes.rgb_color[1]}, ${entity.attributes.rgb_color[2]}, 0.25)`;
+                          }
+                          return 'rgba(255, 165, 0, 0.25)';
+                        ]]]
+                    - padding: 0px
+                    - overflow: hidden
+                  grid:
+                    - grid-template-areas: '"slider i chips" "slider n n"'
+                    - grid-template-columns: 22px 1fr min-content
+                    - grid-template-rows: 1fr min-content
+                  icon:
+                    - width: 75%
+                    - color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return '#444444';
+                          if (entity.attributes.rgb_color) return `rgb(${entity.attributes.rgb_color})`;
+                          return 'orange';
+                        ]]]
+                    - align-self: center
+                    - justify-self: center
+                  name:
+                    - justify-self: center
+                    - align-self: center
+                    - font-weight: 600
+                    - font-size: 11px
+                    - margin-bottom: 8px
+                    - color: |
+                        [[[
+                          return (!entity || entity.state !== 'on') ? '#777777' : 'white';
+                        ]]]
+                  custom_fields:
+                    slider:
+                      - align-self: stretch
+                    chips:
+                      - padding-right: 4px
+                      - align-self: start
+                      - margin-top: 4px
+                custom_fields:
+                  slider:
+                    card:
+                      type: custom:my-slider-v2
+                      entity: light.wc_beneden
+                      vertical: true
+                  chips: |
+                    [[[
+                      if (entity && entity.state === 'on') {
+                        return `<ha-icon icon="mdi:palette" class="chip-icon" onclick="event.stopPropagation(); const e = new Event('hass-more-info', { bubbles: true }); e.detail = { entityId: '${entity.entity_id}' }; document.querySelector('home-assistant').dispatchEvent(e);"></ha-icon>
+                          <style> .chip-icon { padding: 2px; background: rgba(255,255,255,0.1); border-radius: 4px; --mdc-icon-size: 12px; cursor: pointer; pointer-events: auto; } </style>`;
+                      }
+                    ]]]
+              - type: custom:button-card
+                entity: light.wc_boven
+                name: WC Bov.
+                icon: hue:room-toilet
+                aspect_ratio: 1/1
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - border: 1px solid rgba(255,255,255,0.05)
+                    - background-color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return 'rgba(22, 22, 22, 0.8)';
+                          if (entity.attributes.rgb_color) {
+                            return `rgba(${entity.attributes.rgb_color[0]}, ${entity.attributes.rgb_color[1]}, ${entity.attributes.rgb_color[2]}, 0.25)`;
+                          }
+                          return 'rgba(255, 165, 0, 0.25)';
+                        ]]]
+                    - padding: 0px
+                    - overflow: hidden
+                  grid:
+                    - grid-template-areas: '"slider i chips" "slider n n"'
+                    - grid-template-columns: 22px 1fr min-content
+                    - grid-template-rows: 1fr min-content
+                  icon:
+                    - width: 75%
+                    - color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return '#444444';
+                          if (entity.attributes.rgb_color) return `rgb(${entity.attributes.rgb_color})`;
+                          return 'orange';
+                        ]]]
+                    - align-self: center
+                    - justify-self: center
+                  name:
+                    - justify-self: center
+                    - align-self: center
+                    - font-weight: 600
+                    - font-size: 11px
+                    - margin-bottom: 8px
+                    - color: |
+                        [[[
+                          return (!entity || entity.state !== 'on') ? '#777777' : 'white';
+                        ]]]
+                  custom_fields:
+                    slider:
+                      - align-self: stretch
+                    chips:
+                      - padding-right: 4px
+                      - align-self: start
+                      - margin-top: 4px
+                custom_fields:
+                  slider:
+                    card:
+                      type: custom:my-slider-v2
+                      entity: light.wc_boven
+                      vertical: true
+                  chips: |
+                    [[[
+                      if (entity && entity.state === 'on') {
+                        return `<ha-icon icon="mdi:palette" class="chip-icon" onclick="event.stopPropagation(); const e = new Event('hass-more-info', { bubbles: true }); e.detail = { entityId: '${entity.entity_id}' }; document.querySelector('home-assistant').dispatchEvent(e);"></ha-icon>
+                          <style> .chip-icon { padding: 2px; background: rgba(255,255,255,0.1); border-radius: 4px; --mdc-icon-size: 12px; cursor: pointer; pointer-events: auto; } </style>`;
+                      }
+                    ]]]
+              - type: custom:button-card
+                entity: light.overloop_lichten
+                name: Overloop
+                icon: hue:room-hallway
+                aspect_ratio: 1/1
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - border: 1px solid rgba(255,255,255,0.05)
+                    - background-color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return 'rgba(22, 22, 22, 0.8)';
+                          if (entity.attributes.rgb_color) {
+                            return `rgba(${entity.attributes.rgb_color[0]}, ${entity.attributes.rgb_color[1]}, ${entity.attributes.rgb_color[2]}, 0.25)`;
+                          }
+                          return 'rgba(255, 165, 0, 0.25)';
+                        ]]]
+                    - padding: 0px
+                    - overflow: hidden
+                  grid:
+                    - grid-template-areas: '"slider i chips" "slider n n"'
+                    - grid-template-columns: 22px 1fr min-content
+                    - grid-template-rows: 1fr min-content
+                  icon:
+                    - width: 75%
+                    - color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return '#444444';
+                          if (entity.attributes.rgb_color) return `rgb(${entity.attributes.rgb_color})`;
+                          return 'orange';
+                        ]]]
+                    - align-self: center
+                    - justify-self: center
+                  name:
+                    - justify-self: center
+                    - align-self: center
+                    - font-weight: 600
+                    - font-size: 11px
+                    - margin-bottom: 8px
+                    - color: |
+                        [[[
+                          return (!entity || entity.state !== 'on') ? '#777777' : 'white';
+                        ]]]
+                  custom_fields:
+                    slider:
+                      - align-self: stretch
+                    chips:
+                      - padding-right: 4px
+                      - align-self: start
+                      - margin-top: 4px
+                custom_fields:
+                  slider:
+                    card:
+                      type: custom:my-slider-v2
+                      entity: light.overloop_lichten
+                      vertical: true
+                  chips: |
+                    [[[
+                      if (entity && entity.state === 'on') {
+                        return `<ha-icon icon="mdi:palette" class="chip-icon" onclick="event.stopPropagation(); const e = new Event('hass-more-info', { bubbles: true }); e.detail = { entityId: '${entity.entity_id}' }; document.querySelector('home-assistant').dispatchEvent(e);"></ha-icon>
+                          <style> .chip-icon { padding: 2px; background: rgba(255,255,255,0.1); border-radius: 4px; --mdc-icon-size: 12px; cursor: pointer; pointer-events: auto; } </style>`;
+                      }
+                    ]]]
+              - type: custom:button-card
+                entity: light.bijkeuken_lichten
+                name: Bijkeuken
+                icon: hue:room-closet
+                aspect_ratio: 1/1
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - border: 1px solid rgba(255,255,255,0.05)
+                    - background-color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return 'rgba(22, 22, 22, 0.8)';
+                          if (entity.attributes.rgb_color) {
+                            return `rgba(${entity.attributes.rgb_color[0]}, ${entity.attributes.rgb_color[1]}, ${entity.attributes.rgb_color[2]}, 0.25)`;
+                          }
+                          return 'rgba(255, 165, 0, 0.25)';
+                        ]]]
+                    - padding: 0px
+                    - overflow: hidden
+                  grid:
+                    - grid-template-areas: '"slider i chips" "slider n n"'
+                    - grid-template-columns: 22px 1fr min-content
+                    - grid-template-rows: 1fr min-content
+                  icon:
+                    - width: 75%
+                    - color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return '#444444';
+                          if (entity.attributes.rgb_color) return `rgb(${entity.attributes.rgb_color})`;
+                          return 'orange';
+                        ]]]
+                    - align-self: center
+                    - justify-self: center
+                  name:
+                    - justify-self: center
+                    - align-self: center
+                    - font-weight: 600
+                    - font-size: 11px
+                    - margin-bottom: 8px
+                    - color: |
+                        [[[
+                          return (!entity || entity.state !== 'on') ? '#777777' : 'white';
+                        ]]]
+                  custom_fields:
+                    slider:
+                      - align-self: stretch
+                    chips:
+                      - padding-right: 4px
+                      - align-self: start
+                      - margin-top: 4px
+                custom_fields:
+                  slider:
+                    card:
+                      type: custom:my-slider-v2
+                      entity: light.bijkeuken_lichten
+                      vertical: true
+                  chips: |
+                    [[[
+                      if (entity && entity.state === 'on') {
+                        return `<ha-icon icon="mdi:palette" class="chip-icon" onclick="event.stopPropagation(); const e = new Event('hass-more-info', { bubbles: true }); e.detail = { entityId: '${entity.entity_id}' }; document.querySelector('home-assistant').dispatchEvent(e);"></ha-icon>
+                          <style> .chip-icon { padding: 2px; background: rgba(255,255,255,0.1); border-radius: 4px; --mdc-icon-size: 12px; cursor: pointer; pointer-events: auto; } </style>`;
+                      }
+                    ]]]
+              - type: custom:button-card
+                entity: light.garage_lichten
+                name: Garage
+                icon: hue:room-carport
+                aspect_ratio: 1/1
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - border: 1px solid rgba(255,255,255,0.05)
+                    - background-color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return 'rgba(22, 22, 22, 0.8)';
+                          if (entity.attributes.rgb_color) {
+                            return `rgba(${entity.attributes.rgb_color[0]}, ${entity.attributes.rgb_color[1]}, ${entity.attributes.rgb_color[2]}, 0.25)`;
+                          }
+                          return 'rgba(255, 165, 0, 0.25)';
+                        ]]]
+                    - padding: 0px
+                    - overflow: hidden
+                  grid:
+                    - grid-template-areas: '"slider i chips" "slider n n"'
+                    - grid-template-columns: 22px 1fr min-content
+                    - grid-template-rows: 1fr min-content
+                  icon:
+                    - width: 75%
+                    - color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return '#444444';
+                          if (entity.attributes.rgb_color) return `rgb(${entity.attributes.rgb_color})`;
+                          return 'orange';
+                        ]]]
+                    - align-self: center
+                    - justify-self: center
+                  name:
+                    - justify-self: center
+                    - align-self: center
+                    - font-weight: 600
+                    - font-size: 11px
+                    - margin-bottom: 8px
+                    - color: |
+                        [[[
+                          return (!entity || entity.state !== 'on') ? '#777777' : 'white';
+                        ]]]
+                  custom_fields:
+                    slider:
+                      - align-self: stretch
+                    chips:
+                      - padding-right: 4px
+                      - align-self: start
+                      - margin-top: 4px
+                custom_fields:
+                  slider:
+                    card:
+                      type: custom:my-slider-v2
+                      entity: light.garage_lichten
+                      vertical: true
+                  chips: |
+                    [[[
+                      if (entity && entity.state === 'on') {
+                        return `<ha-icon icon="mdi:palette" class="chip-icon" onclick="event.stopPropagation(); const e = new Event('hass-more-info', { bubbles: true }); e.detail = { entityId: '${entity.entity_id}' }; document.querySelector('home-assistant').dispatchEvent(e);"></ha-icon>
+                          <style> .chip-icon { padding: 2px; background: rgba(255,255,255,0.1); border-radius: 4px; --mdc-icon-size: 12px; cursor: pointer; pointer-events: auto; } </style>`;
+                      }
+                    ]]]
+              - type: custom:button-card
+                entity: light.buiten_lichten
+                name: Buiten
+                icon: hue:wall-fuzo-h
+                aspect_ratio: 1/1
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - border: 1px solid rgba(255,255,255,0.05)
+                    - background-color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return 'rgba(22, 22, 22, 0.8)';
+                          if (entity.attributes.rgb_color) {
+                            return `rgba(${entity.attributes.rgb_color[0]}, ${entity.attributes.rgb_color[1]}, ${entity.attributes.rgb_color[2]}, 0.25)`;
+                          }
+                          return 'rgba(255, 165, 0, 0.25)';
+                        ]]]
+                    - padding: 0px
+                    - overflow: hidden
+                  grid:
+                    - grid-template-areas: '"slider i chips" "slider n n"'
+                    - grid-template-columns: 22px 1fr min-content
+                    - grid-template-rows: 1fr min-content
+                  icon:
+                    - width: 75%
+                    - color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return '#444444';
+                          if (entity.attributes.rgb_color) return `rgb(${entity.attributes.rgb_color})`;
+                          return 'orange';
+                        ]]]
+                    - align-self: center
+                    - justify-self: center
+                  name:
+                    - justify-self: center
+                    - align-self: center
+                    - font-weight: 600
+                    - font-size: 11px
+                    - margin-bottom: 8px
+                    - color: |
+                        [[[
+                          return (!entity || entity.state !== 'on') ? '#777777' : 'white';
+                        ]]]
+                  custom_fields:
+                    slider:
+                      - align-self: stretch
+                    chips:
+                      - padding-right: 4px
+                      - align-self: start
+                      - margin-top: 4px
+                custom_fields:
+                  slider:
+                    card:
+                      type: custom:my-slider-v2
+                      entity: light.buiten_lichten
+                      vertical: true
+                  chips: |
+                    [[[
+                      if (entity && entity.state === 'on') {
+                        return `<ha-icon icon="mdi:palette" class="chip-icon" onclick="event.stopPropagation(); const e = new Event('hass-more-info', { bubbles: true }); e.detail = { entityId: '${entity.entity_id}' }; document.querySelector('home-assistant').dispatchEvent(e);"></ha-icon>
+                          <style> .chip-icon { padding: 2px; background: rgba(255,255,255,0.1); border-radius: 4px; --mdc-icon-size: 12px; cursor: pointer; pointer-events: auto; } </style>`;
+                      }
+                    ]]]
+              - type: custom:button-card
+                entity: light.carport_lichten
+                name: Carport
+                icon: hue:room-carport
+                aspect_ratio: 1/1
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - border: 1px solid rgba(255,255,255,0.05)
+                    - background-color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return 'rgba(22, 22, 22, 0.8)';
+                          if (entity.attributes.rgb_color) {
+                            return `rgba(${entity.attributes.rgb_color[0]}, ${entity.attributes.rgb_color[1]}, ${entity.attributes.rgb_color[2]}, 0.25)`;
+                          }
+                          return 'rgba(255, 165, 0, 0.25)';
+                        ]]]
+                    - padding: 0px
+                    - overflow: hidden
+                  grid:
+                    - grid-template-areas: '"slider i chips" "slider n n"'
+                    - grid-template-columns: 22px 1fr min-content
+                    - grid-template-rows: 1fr min-content
+                  icon:
+                    - width: 75%
+                    - color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return '#444444';
+                          if (entity.attributes.rgb_color) return `rgb(${entity.attributes.rgb_color})`;
+                          return 'orange';
+                        ]]]
+                    - align-self: center
+                    - justify-self: center
+                  name:
+                    - justify-self: center
+                    - align-self: center
+                    - font-weight: 600
+                    - font-size: 11px
+                    - margin-bottom: 8px
+                    - color: |
+                        [[[
+                          return (!entity || entity.state !== 'on') ? '#777777' : 'white';
+                        ]]]
+                  custom_fields:
+                    slider:
+                      - align-self: stretch
+                    chips:
+                      - padding-right: 4px
+                      - align-self: start
+                      - margin-top: 4px
+                custom_fields:
+                  slider:
+                    card:
+                      type: custom:my-slider-v2
+                      entity: light.carport_lichten
+                      vertical: true
+                  chips: |
+                    [[[
+                      if (entity && entity.state === 'on') {
+                        return `<ha-icon icon="mdi:palette" class="chip-icon" onclick="event.stopPropagation(); const e = new Event('hass-more-info', { bubbles: true }); e.detail = { entityId: '${entity.entity_id}' }; document.querySelector('home-assistant').dispatchEvent(e);"></ha-icon>
+                          <style> .chip-icon { padding: 2px; background: rgba(255,255,255,0.1); border-radius: 4px; --mdc-icon-size: 12px; cursor: pointer; pointer-events: auto; } </style>`;
+                      }
+                    ]]]
+      - column_span: 1
+        cards:
+          - type: heading
+            heading: Overig
+          - type: grid
+            columns: 4
+            square: false
+            cards:
+              - type: custom:button-card
+                entity: light.schuur
+                name: Schuur
+                icon: hue:room-outdoors
+                aspect_ratio: 1/1
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - border: 1px solid rgba(255,255,255,0.05)
+                    - background-color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return 'rgba(22, 22, 22, 0.8)';
+                          if (entity.attributes.rgb_color) {
+                            return `rgba(${entity.attributes.rgb_color[0]}, ${entity.attributes.rgb_color[1]}, ${entity.attributes.rgb_color[2]}, 0.25)`;
+                          }
+                          return 'rgba(255, 165, 0, 0.25)';
+                        ]]]
+                    - padding: 0px
+                    - overflow: hidden
+                  grid:
+                    - grid-template-areas: '"slider i chips" "slider n n"'
+                    - grid-template-columns: 22px 1fr min-content
+                    - grid-template-rows: 1fr min-content
+                  icon:
+                    - width: 75%
+                    - color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return '#444444';
+                          if (entity.attributes.rgb_color) return `rgb(${entity.attributes.rgb_color})`;
+                          return 'orange';
+                        ]]]
+                    - align-self: center
+                    - justify-self: center
+                  name:
+                    - justify-self: center
+                    - align-self: center
+                    - font-weight: 600
+                    - font-size: 11px
+                    - margin-bottom: 8px
+                    - color: |
+                        [[[
+                          return (!entity || entity.state !== 'on') ? '#777777' : 'white';
+                        ]]]
+                  custom_fields:
+                    slider:
+                      - align-self: stretch
+                    chips:
+                      - padding-right: 4px
+                      - align-self: start
+                      - margin-top: 4px
+                custom_fields:
+                  slider:
+                    card:
+                      type: custom:my-slider-v2
+                      entity: light.schuur
+                      vertical: true
+                  chips: |
+                    [[[
+                      if (entity && entity.state === 'on') {
+                        return `<ha-icon icon="mdi:palette" class="chip-icon" onclick="event.stopPropagation(); const e = new Event('hass-more-info', { bubbles: true }); e.detail = { entityId: '${entity.entity_id}' }; document.querySelector('home-assistant').dispatchEvent(e);"></ha-icon>
+                          <style> .chip-icon { padding: 2px; background: rgba(255,255,255,0.1); border-radius: 4px; --mdc-icon-size: 12px; cursor: pointer; pointer-events: auto; } </style>`;
+                      }
+                    ]]]
+              - type: custom:button-card
+                entity: light.jacuzzi_lichten
+                name: Jacuzzi
+                icon: hue:room-pool
+                aspect_ratio: 1/1
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - border: 1px solid rgba(255,255,255,0.05)
+                    - background-color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return 'rgba(22, 22, 22, 0.8)';
+                          if (entity.attributes.rgb_color) {
+                            return `rgba(${entity.attributes.rgb_color[0]}, ${entity.attributes.rgb_color[1]}, ${entity.attributes.rgb_color[2]}, 0.25)`;
+                          }
+                          return 'rgba(255, 165, 0, 0.25)';
+                        ]]]
+                    - padding: 0px
+                    - overflow: hidden
+                  grid:
+                    - grid-template-areas: '"slider i chips" "slider n n"'
+                    - grid-template-columns: 22px 1fr min-content
+                    - grid-template-rows: 1fr min-content
+                  icon:
+                    - width: 75%
+                    - color: |
+                        [[[
+                          if (!entity || entity.state !== 'on') return '#444444';
+                          if (entity.attributes.rgb_color) return `rgb(${entity.attributes.rgb_color})`;
+                          return 'orange';
+                        ]]]
+                    - align-self: center
+                    - justify-self: center
+                  name:
+                    - justify-self: center
+                    - align-self: center
+                    - font-weight: 600
+                    - font-size: 11px
+                    - margin-bottom: 8px
+                    - color: |
+                        [[[
+                          return (!entity || entity.state !== 'on') ? '#777777' : 'white';
+                        ]]]
+                  custom_fields:
+                    slider:
+                      - align-self: stretch
+                    chips:
+                      - padding-right: 4px
+                      - align-self: start
+                      - margin-top: 4px
+                custom_fields:
+                  slider:
+                    card:
+                      type: custom:my-slider-v2
+                      entity: light.jacuzzi_lichten
+                      vertical: true
+                  chips: |
+                    [[[
+                      if (entity && entity.state === 'on') {
+                        return `<ha-icon icon="mdi:palette" class="chip-icon" onclick="event.stopPropagation(); const e = new Event('hass-more-info', { bubbles: true }); e.detail = { entityId: '${entity.entity_id}' }; document.querySelector('home-assistant').dispatchEvent(e);"></ha-icon>
+                          <style> .chip-icon { padding: 2px; background: rgba(255,255,255,0.1); border-radius: 4px; --mdc-icon-size: 12px; cursor: pointer; pointer-events: auto; } </style>`;
+                      }
+                    ]]]
+  - title: Screens
+    path: screens
+    type: sections
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Beneden
+          - type: grid
+            columns: 1
+            square: false
+            cards:
+              - type: horizontal-stack
+                cards:
+                  - type: custom:button-card
+                    entity: cover.beneden
+                    name: Beneden
+                    icon: mdi:swap-vertical
+                    show_name: true
+                    show_state: false
+                    tap_action:
+                      action: none
+                    styles:
+                      card:
+                        - background-color: '#161616'
+                        - border-radius: 20px
+                        - border: 1px solid "#2a2a2a"
+                        - height: 80px
+                      icon:
+                        - width: 30px
+                        - color: '#ffa500'
+                      name:
+                        - font-size: 12px
+                        - font-weight: bold
+                        - color: '#B5B5B5'
+                  - type: custom:slider-button-card
+                    entity: cover.woonkamer_covers
+                    name: Woonkamer
+                    slider:
+                      direction: top-bottom
+                      background: striped
+                      invert: true
+                      force_square: true
+                    action_button:
+                      mode: custom
+                      icon: mdi:swap-vertical
+                      tap_action:
+                        action: toggle
+                    icon:
+                      show: false
+                    style: >
+                      :host {
+                        --slider-color: rgba(255, 165, 0, 0.2) !important;
+                        --slider-bg-color: #161616 !important;
+                        --p-color: #161616 !important;
+                        --shape-color: #161616 !important;
+                        --icon-color: #ffa500 !important;
+                        --label-color-off: #B5B5B5 !important;
+                      }
+
+                      ha-card {
+                        background: #161616 !important;
+                        border-radius: 20px !important;
+                        border: 1px solid #2a2a2a !important;
+                      }
+
+                      .text { font-size: 13px !important; bottom: 10%
+                      !important; top: unset !important; }
+
+                      .action { top: 15% !important; }
+                  - type: custom:slider-button-card
+                    entity: cover.screen_kantoor_beneden
+                    name: Kantoor
+                    slider:
+                      direction: top-bottom
+                      background: striped
+                      invert: true
+                      force_square: true
+                    action_button:
+                      mode: custom
+                      icon: mdi:swap-vertical
+                      tap_action:
+                        action: toggle
+                    icon:
+                      show: false
+                    style: >
+                      :host {
+                        --slider-color: rgba(255, 165, 0, 0.2) !important;
+                        --slider-bg-color: #161616 !important;
+                        --p-color: #161616 !important;
+                        --shape-color: #161616 !important;
+                        --icon-color: #ffa500 !important;
+                        --label-color-off: #B5B5B5 !important;
+                      }
+
+                      ha-card {
+                        background: #161616 !important;
+                        border-radius: 20px !important;
+                        border: 1px solid #2a2a2a !important;
+                      }
+
+                      .text { font-size: 13px !important; bottom: 10%
+                      !important; top: unset !important; }
+
+                      .action { top: 15% !important; }
+              - type: horizontal-stack
+                cards:
+                  - type: custom:button-card
+                    entity: cover.hal_alles
+                    name: Entree
+                    icon: mdi:swap-vertical
+                    show_name: true
+                    show_state: false
+                    tap_action:
+                      action: none
+                    styles:
+                      card:
+                        - background-color: '#161616'
+                        - border-radius: 20px
+                        - border: 1px solid "#2a2a2a"
+                        - height: 80px
+                      icon:
+                        - width: 30px
+                        - color: '#ffa500'
+                      name:
+                        - font-size: 12px
+                        - font-weight: bold
+                        - color: '#B5B5B5'
+                  - type: custom:slider-button-card
+                    entity: cover.zonwering_binnen
+                    attribute: tilt
+                    name: Jaloezie
+                    slider:
+                      direction: top-bottom
+                      background: striped
+                      invert: true
+                      force_square: true
+                    action_button:
+                      mode: custom
+                      icon: mdi:swap-vertical
+                      tap_action:
+                        action: toggle
+                    icon:
+                      show: false
+                    style: >
+                      :host {
+                        --slider-color: rgba(255, 165, 0, 0.2) !important;
+                        --slider-bg-color: #161616 !important;
+                        --p-color: #161616 !important;
+                        --shape-color: #161616 !important;
+                        --icon-color: #ffa500 !important;
+                        --label-color-off: #B5B5B5 !important;
+                      }
+
+                      ha-card {
+                        background: #161616 !important;
+                        border-radius: 20px !important;
+                        border: 1px solid #2a2a2a !important;
+                      }
+
+                      .text { font-size: 13px !important; bottom: 10%
+                      !important; top: unset !important; }
+
+                      .action { top: 15% !important; }
+                  - type: custom:slider-button-card
+                    entity: cover.screen_entree
+                    name: Screen
+                    slider:
+                      direction: top-bottom
+                      background: striped
+                      invert: true
+                      force_square: true
+                    action_button:
+                      mode: custom
+                      icon: mdi:swap-vertical
+                      tap_action:
+                        action: toggle
+                    icon:
+                      show: false
+                    style: >
+                      :host {
+                        --slider-color: rgba(255, 165, 0, 0.2) !important;
+                        --slider-bg-color: #161616 !important;
+                        --p-color: #161616 !important;
+                        --shape-color: #161616 !important;
+                        --icon-color: #ffa500 !important;
+                        --label-color-off: #B5B5B5 !important;
+                      }
+
+                      ha-card {
+                        background: #161616 !important;
+                        border-radius: 20px !important;
+                        border: 1px solid #2a2a2a !important;
+                      }
+
+                      .text { font-size: 13px !important; bottom: 10%
+                      !important; top: unset !important; }
+
+                      .action { top: 15% !important; }
+              - type: horizontal-stack
+                cards:
+                  - type: custom:button-card
+                    entity: cover.schuifpui_alles
+                    name: Schuifpui
+                    icon: mdi:swap-vertical
+                    styles:
+                      card:
+                        - background-color: '#161616'
+                        - border-radius: 20px
+                        - border: 1px solid "#2a2a2a"
+                        - height: 80px
+                      icon:
+                        - width: 30px
+                        - color: '#ffa500'
+                      name:
+                        - font-size: 11px
+                        - font-weight: bold
+                        - color: '#B5B5B5'
+                  - type: custom:button-card
+                    name: Open
+                    icon: mdi:curtains
+                    tap_action:
+                      action: call-service
+                      service: cover.open_cover
+                      service_data:
+                        entity_id: cover.schuifpui_alles
+                    styles:
+                      card:
+                        - background-color: '#161616'
+                        - border-radius: 20px
+                        - border: 1px solid "#2a2a2a"
+                        - height: 80px
+                      icon:
+                        - width: 30px
+                        - color: '#00d4ff'
+                      name:
+                        - font-size: 12px
+                        - color: '#B5B5B5'
+                  - type: custom:button-card
+                    name: Dicht
+                    icon: mdi:curtains-closed
+                    tap_action:
+                      action: call-service
+                      service: cover.close_cover
+                      service_data:
+                        entity_id: cover.schuifpui_alles
+                    styles:
+                      card:
+                        - background-color: '#161616'
+                        - border-radius: 20px
+                        - border: 1px solid "#2a2a2a"
+                        - height: 80px
+                      icon:
+                        - width: 30px
+                        - color: '#ff4d4d'
+                      name:
+                        - font-size: 12px
+                        - color: '#B5B5B5'
+      - type: grid
+        cards:
+          - type: heading
+            heading: Boven
+          - type: grid
+            columns: 1
+            square: false
+            cards:
+              - type: horizontal-stack
+                cards:
+                  - type: custom:button-card
+                    entity: cover.master_alles
+                    name: Master
+                    icon: mdi:swap-vertical
+                    styles:
+                      card:
+                        - background-color: '#161616'
+                        - border-radius: 20px
+                        - border: 1px solid "#2a2a2a"
+                        - height: 80px
+                      icon:
+                        - width: 30px
+                        - color: '#ffa500'
+                      name:
+                        - font-size: 12px
+                        - font-weight: bold
+                        - color: '#B5B5B5'
+                  - type: custom:slider-button-card
+                    entity: cover.master_dakramen
+                    name: Dakramen
+                    slider:
+                      direction: top-bottom
+                      background: striped
+                      invert: true
+                      force_square: true
+                    action_button:
+                      mode: custom
+                      icon: mdi:swap-vertical
+                      tap_action:
+                        action: toggle
+                    icon:
+                      show: false
+                    style: >
+                      :host {
+                        --slider-color: rgba(255, 165, 0, 0.2) !important;
+                        --slider-bg-color: #161616 !important;
+                        --p-color: #161616 !important;
+                        --shape-color: #161616 !important;
+                        --icon-color: #ffa500 !important;
+                        --label-color-off: #B5B5B5 !important;
+                      }
+
+                      ha-card {
+                        background: #161616 !important;
+                        border-radius: 20px !important;
+                        border: 1px solid #2a2a2a !important;
+                      }
+
+                      .text { font-size: 13px !important; bottom: 10%
+                      !important; top: unset !important; }
+
+                      .action { top: 15% !important; }
+                  - type: custom:slider-button-card
+                    entity: cover.master_grote_ramen
+                    name: Grote ramen
+                    slider:
+                      direction: top-bottom
+                      background: striped
+                      invert: true
+                      force_square: true
+                    action_button:
+                      mode: custom
+                      icon: mdi:swap-vertical
+                      tap_action:
+                        action: toggle
+                    icon:
+                      show: false
+                    style: >
+                      :host {
+                        --slider-color: rgba(255, 165, 0, 0.2) !important;
+                        --slider-bg-color: #161616 !important;
+                        --p-color: #161616 !important;
+                        --shape-color: #161616 !important;
+                        --icon-color: #ffa500 !important;
+                        --label-color-off: #B5B5B5 !important;
+                      }
+
+                      ha-card {
+                        background: #161616 !important;
+                        border-radius: 20px !important;
+                        border: 1px solid #2a2a2a !important;
+                      }
+
+                      .text { font-size: 13px !important; bottom: 10%
+                      !important; top: unset !important; }
+
+                      .action { top: 15% !important; }
+              - type: horizontal-stack
+                cards:
+                  - type: custom:button-card
+                    entity: cover.eva_alles
+                    name: Eva
+                    icon: mdi:swap-vertical
+                    styles:
+                      card:
+                        - background-color: '#161616'
+                        - border-radius: 20px
+                        - border: 1px solid "#2a2a2a"
+                        - height: 80px
+                      icon:
+                        - width: 30px
+                        - color: '#ffa500'
+                      name:
+                        - font-size: 12px
+                        - font-weight: bold
+                        - color: '#B5B5B5'
+                  - type: custom:slider-button-card
+                    entity: cover.shutter
+                    name: Dakraam
+                    slider:
+                      direction: top-bottom
+                      background: striped
+                      invert: true
+                      force_square: true
+                    action_button:
+                      mode: custom
+                      icon: mdi:swap-vertical
+                      tap_action:
+                        action: toggle
+                    icon:
+                      show: false
+                    style: >
+                      :host {
+                        --slider-color: rgba(255, 165, 0, 0.2) !important;
+                        --slider-bg-color: #161616 !important;
+                        --p-color: #161616 !important;
+                        --shape-color: #161616 !important;
+                        --icon-color: #ffa500 !important;
+                        --label-color-off: #B5B5B5 !important;
+                      }
+
+                      ha-card {
+                        background: #161616 !important;
+                        border-radius: 20px !important;
+                        border: 1px solid #2a2a2a !important;
+                      }
+
+                      .text { font-size: 13px !important; bottom: 10%
+                      !important; top: unset !important; }
+
+                      .action { top: 15% !important; }
+                  - type: custom:slider-button-card
+                    entity: cover.sunilus_io_2
+                    name: Grote raam
+                    slider:
+                      direction: top-bottom
+                      background: striped
+                      invert: true
+                      force_square: true
+                    action_button:
+                      mode: custom
+                      icon: mdi:swap-vertical
+                      tap_action:
+                        action: toggle
+                    icon:
+                      show: false
+                    style: >
+                      :host {
+                        --slider-color: rgba(255, 165, 0, 0.2) !important;
+                        --slider-bg-color: #161616 !important;
+                        --p-color: #161616 !important;
+                        --shape-color: #161616 !important;
+                        --icon-color: #ffa500 !important;
+                        --label-color-off: #B5B5B5 !important;
+                      }
+
+                      ha-card {
+                        background: #161616 !important;
+                        border-radius: 20px !important;
+                        border: 1px solid #2a2a2a !important;
+                      }
+
+                      .text { font-size: 13px !important; bottom: 10%
+                      !important; top: unset !important; }
+
+                      .action { top: 15% !important; }
+              - type: horizontal-stack
+                cards:
+                  - type: custom:button-card
+                    entity: cover.daan_alles
+                    name: Daan
+                    icon: mdi:swap-vertical
+                    styles:
+                      card:
+                        - background-color: '#161616'
+                        - border-radius: 20px
+                        - border: 1px solid "#2a2a2a"
+                        - height: 80px
+                      icon:
+                        - width: 30px
+                        - color: '#ffa500'
+                      name:
+                        - font-size: 12px
+                        - font-weight: bold
+                        - color: '#B5B5B5'
+                  - type: custom:slider-button-card
+                    entity: cover.io_11474627
+                    name: Dakraam
+                    slider:
+                      direction: top-bottom
+                      background: striped
+                      invert: true
+                      force_square: true
+                    action_button:
+                      mode: custom
+                      icon: mdi:swap-vertical
+                      tap_action:
+                        action: toggle
+                    icon:
+                      show: false
+                    style: >
+                      :host {
+                        --slider-color: rgba(255, 165, 0, 0.2) !important;
+                        --slider-bg-color: #161616 !important;
+                        --p-color: #161616 !important;
+                        --shape-color: #161616 !important;
+                        --icon-color: #ffa500 !important;
+                        --label-color-off: #B5B5B5 !important;
+                      }
+
+                      ha-card {
+                        background: #161616 !important;
+                        border-radius: 20px !important;
+                        border: 1px solid #2a2a2a !important;
+                      }
+
+                      .text { font-size: 13px !important; bottom: 10%
+                      !important; top: unset !important; }
+
+                      .action { top: 15% !important; }
+                  - type: custom:slider-button-card
+                    entity: cover.sunilus_io
+                    name: Grote raam
+                    slider:
+                      direction: top-bottom
+                      background: striped
+                      invert: true
+                      force_square: true
+                    action_button:
+                      mode: custom
+                      icon: mdi:swap-vertical
+                      tap_action:
+                        action: toggle
+                    icon:
+                      show: false
+                    style: >
+                      :host {
+                        --slider-color: rgba(255, 165, 0, 0.2) !important;
+                        --slider-bg-color: #161616 !important;
+                        --p-color: #161616 !important;
+                        --shape-color: #161616 !important;
+                        --icon-color: #ffa500 !important;
+                        --label-color-off: #B5B5B5 !important;
+                      }
+
+                      ha-card {
+                        background: #161616 !important;
+                        border-radius: 20px !important;
+                        border: 1px solid #2a2a2a !important;
+                      }
+
+                      .text { font-size: 13px !important; bottom: 10%
+                      !important; top: unset !important; }
+
+                      .action { top: 15% !important; }
+              - type: horizontal-stack
+                cards:
+                  - type: custom:button-card
+                    entity: sensor.blank_blank
+                    show_name: false
+                    icon: mdi:blank
+                    styles:
+                      card:
+                        - background: transparent
+                        - border: none
+                        - height: 80px
+                      icon:
+                        - color: transparent
+                  - type: custom:slider-button-card
+                    entity: cover.io_2121689
+                    name: Badkamer
+                    slider:
+                      direction: top-bottom
+                      background: striped
+                      invert: true
+                      force_square: true
+                    action_button:
+                      mode: custom
+                      icon: mdi:swap-vertical
+                      tap_action:
+                        action: toggle
+                    icon:
+                      show: false
+                    style: >
+                      :host {
+                        --slider-color: rgba(255, 165, 0, 0.2) !important;
+                        --slider-bg-color: #161616 !important;
+                        --p-color: #161616 !important;
+                        --shape-color: #161616 !important;
+                        --icon-color: #ffa500 !important;
+                        --label-color-off: #B5B5B5 !important;
+                      }
+
+                      ha-card {
+                        background: #161616 !important;
+                        border-radius: 20px !important;
+                        border: 1px solid #2a2a2a !important;
+                      }
+
+                      .text { font-size: 13px !important; bottom: 10%
+                      !important; top: unset !important; }
+
+                      .action { top: 15% !important; }
+                  - type: custom:slider-button-card
+                    entity: cover.screen_kantoor_boven
+                    name: Gameroom
+                    slider:
+                      direction: top-bottom
+                      background: striped
+                      invert: true
+                      force_square: true
+                    action_button:
+                      mode: custom
+                      icon: mdi:swap-vertical
+                      tap_action:
+                        action: toggle
+                    icon:
+                      show: false
+                    style: >
+                      :host {
+                        --slider-color: rgba(255, 165, 0, 0.2) !important;
+                        --slider-bg-color: #161616 !important;
+                        --p-color: #161616 !important;
+                        --shape-color: #161616 !important;
+                        --icon-color: #ffa500 !important;
+                        --label-color-off: #B5B5B5 !important;
+                      }
+
+                      ha-card {
+                        background: #161616 !important;
+                        border-radius: 20px !important;
+                        border: 1px solid #2a2a2a !important;
+                      }
+
+                      .text { font-size: 13px !important; bottom: 10%
+                      !important; top: unset !important; }
+
+                      .action { top: 15% !important; }
+  - title: Camera
+    path: camera
+    type: sections
+    max_columns: 3
+    sections:
+      - cards:
+          - type: heading
+            heading: Carport
+          - type: custom:vertical-stack-in-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: #161616 !important;
+                  border-radius: 20px !important;
+                  border: 1px solid #2a2a2a !important;
+                  overflow: hidden;
+                }
+            cards:
+              - type: picture-entity
+                entity: binary_sensor.carport_cross_line_alarm
+                camera_image: camera.carport_main
+                camera_view: auto
+                show_name: true
+                show_state: false
+                name: Live Feed
+              - type: entities
+                show_header_toggle: false
+                entities:
+                  - entity: binary_sensor.carport_motion_alarm
+                    name: Beweging
+                    secondary_info: last_changed
+                    card_mod:
+                      style: |
+                        :host {
+                          --paper-item-icon-color: {{ '#00d4ff' if is_state('binary_sensor.carport_motion_alarm', 'on') else '#999' }};
+                        }
+                card_mod:
+                  style: >
+                    ha-card { background: transparent !important; border: none
+                    !important; }
+          - type: picture-entity
+            entity: image.frigate_carport_person
+            name: Laatste Persoon
+            show_name: true
+            show_state: false
+            card_mod:
+              style: |
+                ha-card {
+                  background: #161616 !important;
+                  border-radius: 20px !important;
+                  border: 1px solid #2a2a2a !important;
+                }
+      - cards:
+          - type: heading
+            heading: Tuin
+          - type: custom:vertical-stack-in-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: #161616 !important;
+                  border-radius: 20px !important;
+                  border: 1px solid #2a2a2a !important;
+                  overflow: hidden;
+                }
+            cards:
+              - type: picture-entity
+                entity: binary_sensor.tuin_cross_line_alarm
+                camera_image: camera.tuin_main
+                camera_view: auto
+                show_name: true
+                show_state: false
+                name: Live Feed
+              - type: entities
+                show_header_toggle: false
+                entities:
+                  - entity: binary_sensor.tuin_motion_alarm
+                    name: Beweging
+                    secondary_info: last_changed
+                    card_mod:
+                      style: |
+                        :host {
+                          --paper-item-icon-color: {{ '#00d4ff' if is_state('binary_sensor.tuin_motion_alarm', 'on') else '#999' }};
+                        }
+                card_mod:
+                  style: >
+                    ha-card { background: transparent !important; border: none
+                    !important; }
+          - type: picture-entity
+            entity: image.frigate_tuin_person
+            name: Laatste Persoon
+            show_name: true
+            show_state: false
+            card_mod:
+              style: |
+                ha-card {
+                  background: #161616 !important;
+                  border-radius: 20px !important;
+                  border: 1px solid #2a2a2a !important;
+                }
+      - cards:
+          - type: heading
+            heading: Zijkant
+          - type: custom:vertical-stack-in-card
+            card_mod:
+              style: |
+                ha-card {
+                  background: #161616 !important;
+                  border-radius: 20px !important;
+                  border: 1px solid #2a2a2a !important;
+                  overflow: hidden;
+                }
+            cards:
+              - type: picture-entity
+                entity: binary_sensor.zijkant_cross_line_alarm
+                camera_image: camera.zijkant_main
+                camera_view: auto
+                show_name: true
+                show_state: false
+                name: Live Feed
+              - type: entities
+                show_header_toggle: false
+                entities:
+                  - entity: binary_sensor.zijkant_motion_alarm
+                    name: Beweging
+                    secondary_info: last_changed
+                    card_mod:
+                      style: |
+                        :host {
+                          --paper-item-icon-color: {{ '#00d4ff' if is_state('binary_sensor.zijkant_motion_alarm', 'on') else '#999' }};
+                        }
+                card_mod:
+                  style: >
+                    ha-card { background: transparent !important; border: none
+                    !important; }
+          - type: picture-entity
+            entity: image.frigate_zijkant_person
+            name: Laatste Persoon
+            show_name: true
+            show_state: false
+            card_mod:
+              style: |
+                ha-card {
+                  background: #161616 !important;
+                  border-radius: 20px !important;
+                  border: 1px solid #2a2a2a !important;
+                }
+  - title: Warmtepomp Status
+    path: warmtepomp-status
+    type: sections
+    max_columns: 3
+    sections:
+      - cards:
+          - type: heading
+            heading: 🤖 Systeem Analyse
+          - type: markdown
+            content: >
+              {% set nu_24u = states('sensor.p1_verbruik_gemiddelde_24u') |
+              float(0) %}  {% set oud_24u =
+              states('sensor.p1_verbruik_gemiddelde_48u') | float(0) %}  {% set
+              verschil = nu_24u - oud_24u %}  {% set strategie =
+              states('input_text.warmtepomp_actieve_regel') %}  {% set temp =
+              states('sensor.woonkamertemperatuur_temperature') | float(0) %}
+
+              {# Correcte prijs extractie conform jouw werkende automatisering
+              #} {% set prijs_nu = states('sensor.tibber_forecast_prices') |
+              float(0) %} {% set prices_list =
+              state_attr('sensor.tibber_forecast_prices', 'prices') %} {% set
+              prijs_3h = prices_list[12].price | float(0) if (prices_list and
+              prices_list | count > 12) else prijs_nu %}
+
+              ## <center> 📊 **Systeem Analyse V2.7** </center>
+
+              ---
+
+              ### **Energieverbruik (vs. Gisteren)** Het gemiddelde verbruik
+              over de afgelopen 24u is **{{ nu_24u | round(0) }} Watt**.
+
+              {% if verschil > 10 %}
+                <font color="#ff4d4d">**📈 Verhoogd verbruik:**</font> Je verbruikt gemiddeld **{{ verschil | abs | round(0) }}W meer** dan gisteren.
+              {% elif verschil < -10 %}
+                <font color="#00ff96">**📉 Besparing:**</font> Je verbruikt gemiddeld **{{ verschil | abs | round(0) }}W minder** dan gisteren.
+              {% else %}
+                <font color="#999999">**⚖️ Stabiel:**</font> Het verbruik is nagenoeg gelijk aan gisteren.
+              {% endif %}
+
+              ---
+
+              ### **Huidige Status** **Strategie:** {% if 'Coasting' in
+              strategie %}<font color="#ff4d4d">**{{ strategie }}**</font> {%
+              elif 'Laden' in strategie or 'Zon' in strategie or 'Negatieve' in
+              strategie or 'Pre-heating' in strategie %}<font
+              color="#00d4ff">**{{ strategie }}**</font> {% else %}<font
+              color="#ffffff">**{{ strategie }}**</font>{% endif %}
+
+              **Woonkamer:** `{{ temp }}°C` | **Prijs nu:** `€{{ prijs_nu |
+              round(3) }}`
+
+              **Prijsverwachting (3u): ** `€{{ prijs_3h | round(3) }}` {% if
+              prijs_nu > 0.001 %}
+                {% set stijging = ((prijs_3h / prijs_nu) - 1) * 100 %}
+                {% if stijging > 20 %} 📈 Sterke stijging (+{{ stijging | round(0) }}%) 
+                {% elif stijging < -20 %} 📉 Sterke daling ({{ stijging | round(0) }}%)
+                {% else %} ⚖️ Stabiel verloop {% endif %}
+              {% else %}
+                🤑 Prijs is nagenoeg nul of negatief
+              {% endif %}
+
+              ---
+
+              ### **🤖 Conclusie & Advies** {% if 'Coasting' in strategie %}
+                ✅ **Efficiëntie:** De warmtepomp staat in *besparingsmodus*. De daling in verbruik is gewenst om de piektarieven te ontwijken.
+              {% elif 'Pre-heating' in strategie %}
+                🚀 **Anticipatie:** Het systeem warmt nu extra op omdat de prijzen over 3 uur fors hoger zijn (**€{{ prijs_3h | round(3) }}**).
+              {% elif 'Laden' in strategie or 'Zon' in strategie or 'Negatieve'
+              in strategie %}
+                ⚡ **Optimalisatie:** Je verbruikt nu bewust meer energie. Je laadt de woning/boiler op met goedkope stroom of zon.
+              {% elif temp < 19.5 %}
+                ⚠️ **Aandacht:** De temperatuur is onder de comfortgrens (19.5°C). Het systeem negeert nu de prijs om je warm te houden.
+              {% else %}
+                ✨ **Balans:** Het systeem draait momenteel in een stabiele modus. Geen directe actie vereist.
+              {% endif %}
+      - cards:
+          - type: heading
+            heading: Monitoring
+          - type: custom:button-card
+            entity: input_text.warmtepomp_actieve_regel
+            name: Huidige Strategie
+            show_state: true
+            styles:
+              card:
+                - background-color: '#161616'
+                - border-radius: 20px
+                - border: 1px solid
+                - padding: 20px
+              grid:
+                - grid-template-areas: '"i n" "i s"'
+                - grid-template-columns: 60px 1fr
+              icon:
+                - width: 40px
+                - color: |
+                    [[[
+                      if (!entity || !entity.state || entity.state === 'unknown') return '#666';
+                      const s = entity.state.toLowerCase();
+                      if (s.includes('negatief')) return '#00ff96';
+                      if (s.includes('laden')) return '#00d4ff';
+                      if (s.includes('besparen')) return '#ff4d4d';
+                      if (s.includes('zon')) return '#ffcc00';
+                      if (s.includes('comfort')) return '#ff8000';
+                      return '#ffa500';
+                    ]]]
+              name:
+                - font-size: 14px
+                - color: '#999'
+                - justify-self: start
+              state:
+                - font-size: 18px
+                - font-weight: bold
+                - color: '#e0e0e0'
+                - justify-self: start
+          - type: horizontal-stack
+            cards:
+              - type: custom:mushroom-entity-card
+                entity: select.operation_mode
+                name: Modus
+                icon_color: orange
+                card_mod:
+                  style: >
+                    ha-card { background: #161616 !important; border-radius:
+                    20px !important; border: 1px solid #2a2a2a !important; }
+              - type: custom:mushroom-template-card
+                primary: >-
+                  {{ state_attr('water_heater.domestic_hot_water_tank',
+                  'current_temperature') }}°C
+                secondary: Boiler Nu
+                icon: mdi:water-boiler
+                icon_color: >-
+                  {{ 'blue' if
+                  state_attr('water_heater.domestic_hot_water_tank',
+                  'current_temperature') | float < 55 else 'cyan' }}
+                card_mod:
+                  style: >
+                    ha-card { background: #161616 !important; border-radius:
+                    20px !important; border: 1px solid #2a2a2a !important; }
+              - type: custom:mushroom-template-card
+                primary: >-
+                  {{ state_attr('water_heater.domestic_hot_water_tank',
+                  'temperature') }}°C
+                secondary: Boiler Doel
+                icon: mdi:target-variant
+                icon_color: green
+                card_mod:
+                  style: >
+                    ha-card { background: #161616 !important; border-radius:
+                    20px !important; border: 1px solid #2a2a2a !important; }
+          - type: custom:apexcharts-card
+            header:
+              show: true
+              title: Systeem Analyse V2.6 (Laatste 24u)
+              show_states: false
+              colorize_states: true
+            graph_span: 24h
+            update_interval: 15min
+            card_mod:
+              style: |
+                ha-card {
+                  background: #161616 !important;
+                  border-radius: 20px !important;
+                  border: 1px solid #2a2a2a !important;
+                }
+            yaxis:
+              - id: left
+                min: 0
+                max: 40
+                decimals: 1
+                apex_config:
+                  tickAmount: 4
+                  title:
+                    text: Temp / Prijs (ct)
+                    style:
+                      color: '#999'
+              - id: energy
+                opposite: true
+                min: 0
+                apex_config:
+                  tickAmount: 4
+                  title:
+                    text: Watt
+                    style:
+                      color: '#999'
+              - id: status
+                show: false
+                min: -5
+                max: 5
+            series:
+              - entity: sensor.p1_meter_3c39e72a40ce_active_power
+                name: P1 Gem. (24u)
+                yaxis_id: energy
+                type: line
+                stroke_width: 1
+                opacity: 0.3
+                transform: 'return x > 0 ? x : 0;'
+                group_by:
+                  func: avg
+                  duration: 24h
+              - entity: sensor.p1_meter_3c39e72a40ce_active_power
+                name: P1 Verbruik
+                yaxis_id: energy
+                type: line
+                color: '#558b2f'
+                stroke_width: 2
+                transform: 'return x > 0 ? x : 0;'
+                group_by:
+                  func: avg
+                  duration: 30min
+              - entity: sensor.p1_meter_3c39e72a40ce_active_power
+                name: ' '
+                yaxis_id: energy
+                type: column
+                color: '#558b2f'
+                opacity: 0.1
+                transform: 'return x > 0 ? x : 0;'
+                group_by:
+                  func: avg
+                  duration: 30min
+              - entity: sensor.warmtepomp_strategie_getal
+                name: Strategie (Offset)
+                yaxis_id: status
+                type: line
+                curve: stepline
+                stroke_width: 3
+                color: '#ffffff'
+              - entity: sensor.woonkamertemperatuur_temperature
+                name: Binnen
+                yaxis_id: left
+                type: line
+                color: '#ff4d4d'
+                stroke_width: 2
+              - entity: sensor.tibber_forecast_prices
+                name: Prijs
+                yaxis_id: left
+                color: '#ffa500'
+                curve: stepline
+                stroke_width: 1
+                opacity: 0.5
+                data_generator: |
+                  return entity.attributes.prices.map((entry) => {
+                    return [new Date(entry.start_time).getTime(), entry.price * 100]; 
+                  });
+      - cards:
+          - type: heading
+            heading: Strategie Legenda
+          - type: vertical-stack
+            cards:
+              - type: custom:button-card
+                name: Uitleg Strategieën (Legenda V2.6)
+                styles:
+                  card:
+                    - background-color: '#161616'
+                    - border-radius: 20px 20px 0 0
+                    - border: 1px solid "#2a2a2a"
+                    - padding: 15px
+                  name:
+                    - color: '#999'
+                    - font-size: 16px
+                    - justify-self: start
+                    - font-weight: bold
+              - type: custom:mushroom-template-card
+                primary: 🤑 Negatieve Prijs (+3)
+                secondary: 'Prijs < 0€: Maximaal verbruik (geld verdienen).'
+                icon: mdi:currency-eur-off
+                icon_color: green
+                card_mod:
+                  style: >
+                    ha-card { background: #161616 !important; border-radius: 0
+                    !important;
+
+                    border-left: 1px solid #2a2a2a !important; border-right: 1px
+                    solid
+
+                    #2a2a2a !important; border-bottom: 1px solid #232323
+                    !important; }
+              - type: custom:mushroom-template-card
+                primary: 🌡️ Comfort Correctie (+2)
+                secondary: 'Binnen < 19.5°C: Comfort heeft altijd prioriteit.'
+                icon: mdi:thermometer-alert
+                icon_color: orange
+                card_mod:
+                  style: >
+                    ha-card { background: #161616 !important; border-radius: 0
+                    !important;
+
+                    border-left: 1px solid #2a2a2a !important; border-right: 1px
+                    solid
+
+                    #2a2a2a !important; border-bottom: 1px solid #232323
+                    !important; }
+              - type: custom:mushroom-template-card
+                primary: 📉 Coasting (-3)
+                secondary: 'Prijs piek: Pomp op laag pitje (indien > 20.2°C).'
+                icon: mdi:trending-down
+                icon_color: red
+                card_mod:
+                  style: >
+                    ha-card { background: #161616 !important; border-radius: 0
+                    !important;
+
+                    border-left: 1px solid #2a2a2a !important; border-right: 1px
+                    solid
+
+                    #2a2a2a !important; border-bottom: 1px solid #232323
+                    !important; }
+              - type: custom:mushroom-template-card
+                primary: ☀️ Zon-overschot (+2)
+                secondary: 'Zon aanwezig: Gratis energie opslaan in vloer.'
+                icon: mdi:solar-power
+                icon_color: yellow
+                card_mod:
+                  style: >
+                    ha-card { background: #161616 !important; border-radius: 0
+                    !important;
+
+                    border-left: 1px solid #2a2a2a !important; border-right: 1px
+                    solid
+
+                    #2a2a2a !important; border-bottom: 1px solid #232323
+                    !important; }
+              - type: custom:mushroom-template-card
+                primary: 🚀 Pre-heating (+2)
+                secondary: 'Prijsstijging op komst: Nu laden voor de piek.'
+                icon: mdi:rocket-launch
+                icon_color: purple
+                card_mod:
+                  style: >
+                    ha-card { background: #161616 !important; border-radius: 0
+                    !important;
+
+                    border-left: 1px solid #2a2a2a !important; border-right: 1px
+                    solid
+
+                    #2a2a2a !important; border-bottom: 1px solid #232323
+                    !important; }
+              - type: custom:mushroom-template-card
+                primary: 🔋 Thermal Battery (+1)
+                secondary: 'Prijs gunstig: Huis extra opwarmen.'
+                icon: mdi:battery-charging
+                icon_color: blue
+                card_mod:
+                  style: >
+                    ha-card { background: #161616 !important; border-radius: 0
+                    !important;
+
+                    border-left: 1px solid #2a2a2a !important; border-right: 1px
+                    solid
+
+                    #2a2a2a !important; border-bottom: 1px solid #232323
+                    !important; }
+              - type: custom:mushroom-template-card
+                primary: ⚖️ Neutrale Balans (0)
+                secondary: 'Normale prijs: Volgt standaard thermostaat.'
+                icon: mdi:scale-balance
+                icon_color: grey
+                card_mod:
+                  style: >
+                    ha-card { background: #161616 !important; border-radius: 0 0
+                    20px 20px
+
+                    !important; border: 1px solid #2a2a2a !important; }
+    cards: []
+  - title: Klimaat & Energie
+    path: klimaat_energie
+    type: sections
+    max_columns: 2
+    sections:
+      - cards:
+          - type: heading
+            heading: Energie Distributie
+          - type: energy-distribution
+            link_dashboard: true
+            card_mod:
+              style: |
+                ha-card {
+                  background: #161616 !important;
+                  border-radius: 20px !important;
+                  border: 1px solid #2a2a2a !important;
+                }
+          - type: energy-sankey
+            layout: horizontal
+            group_by_area: false
+            group_by_floor: false
+      - cards:
+          - type: heading
+            heading: Klimaat Binnenshuis
+          - type: grid
+            columns: 3
+            square: true
+            cards:
+              - type: custom:button-card
+                entity: sensor.outdoor_temperature
+                name: Buiten
+                aspect_ratio: 1/1
+                show_state: true
+                show_icon: true
+                styles:
+                  card:
+                    - background-color: '#161616'
+                    - border-radius: 20px
+                    - border: |
+                        [[[
+                          var temp = parseFloat(entity.state);
+                          if (temp <= 10) return '2px solid #00d4ff';
+                          if (temp > 30) return '2px solid #ff4d4d';
+                          return '1px solid #00ff96';
+                        ]]]
+                    - padding: 10%
+                  grid:
+                    - grid-template-areas: '"i hum" "s s" "n n"'
+                    - grid-template-columns: 1fr 1fr
+                    - grid-template-rows: 1fr min-content min-content
+                  icon:
+                    - width: 28px
+                    - color: |
+                        [[[
+                          var temp = parseFloat(entity.state);
+                          if (temp <= 10) return '#00d4ff';
+                          if (temp > 30) return '#ff4d4d';
+                          return '#00ff96';
+                        ]]]
+                  custom_fields:
+                    hum:
+                      - font-size: 10px
+                      - color: '#808080'
+                      - justify-self: end
+                      - align-self: start
+                  state:
+                    - font-size: 18px
+                    - font-weight: bold
+                    - color: '#e0e0e0'
+                    - justify-self: start
+                    - padding-top: 5px
+                  name:
+                    - font-size: 11px
+                    - color: '#999'
+                    - justify-self: start
+              - type: custom:button-card
+                entity: sensor.woonkamertemperatuur_temperature
+                name: Woonkamer
+                custom_fields:
+                  hum: >-
+                    [[[ return
+                    states['sensor.woonkamertemperatuur_humidity'].state + '%'
+                    ]]]
+                aspect_ratio: 1/1
+                show_state: true
+                show_icon: true
+                styles:
+                  card:
+                    - background-color: '#161616'
+                    - border-radius: 20px
+                    - border: |
+                        [[[
+                          var temp = parseFloat(entity.state);
+                          if (temp <= 17) return '2px solid #00d4ff';
+                          if (temp > 22) return '2px solid #ff4d4d';
+                          return '1px solid #00ff96';
+                        ]]]
+                    - padding: 10%
+                  grid:
+                    - grid-template-areas: '"i hum" "s s" "n n"'
+                    - grid-template-columns: 1fr 1fr
+                    - grid-template-rows: 1fr min-content min-content
+                  icon:
+                    - width: 28px
+                    - color: |
+                        [[[
+                          var temp = parseFloat(entity.state);
+                          if (temp <= 17) return '#00d4ff';
+                          if (temp > 22) return '#ff4d4d';
+                          return '#00ff96';
+                        ]]]
+                  custom_fields:
+                    hum:
+                      - font-size: 10px
+                      - color: '#808080'
+                      - justify-self: end
+                      - align-self: start
+                  state:
+                    - font-size: 18px
+                    - font-weight: bold
+                    - color: '#e0e0e0'
+                    - justify-self: start
+                    - padding-top: 5px
+                  name:
+                    - font-size: 11px
+                    - color: '#999'
+                    - justify-self: start
+                state:
+                  - operator: default
+                    icon: mdi:thermometer
+              - type: custom:button-card
+                entity: sensor.philips_air_8000_temperatuur
+                name: Kantoor Rob
+                custom_fields:
+                  hum: >-
+                    [[[ return
+                    states['sensor.philips_air_8000_luchtvochtigheid'].state +
+                    '%' ]]]
+                aspect_ratio: 1/1
+                show_state: true
+                show_icon: true
+                styles:
+                  card:
+                    - background-color: '#161616'
+                    - border-radius: 20px
+                    - border: |
+                        [[[
+                          var temp = parseFloat(entity.state);
+                          if (temp <= 17) return '2px solid #00d4ff';
+                          if (temp > 22) return '2px solid #ff4d4d';
+                          return '1px solid #00ff96';
+                        ]]]
+                    - padding: 10%
+                  grid:
+                    - grid-template-areas: '"i hum" "s s" "n n"'
+                    - grid-template-columns: 1fr 1fr
+                    - grid-template-rows: 1fr min-content min-content
+                  icon:
+                    - width: 28px
+                    - color: |
+                        [[[
+                          var temp = parseFloat(entity.state);
+                          if (temp <= 17) return '#00d4ff';
+                          if (temp > 22) return '#ff4d4d';
+                          return '#00ff96';
+                        ]]]
+                  custom_fields:
+                    hum:
+                      - font-size: 10px
+                      - color: '#808080'
+                      - justify-self: end
+                      - align-self: start
+                  state:
+                    - font-size: 18px
+                    - font-weight: bold
+                    - color: '#e0e0e0'
+                    - justify-self: start
+                    - padding-top: 5px
+                  name:
+                    - font-size: 11px
+                    - color: '#999'
+                    - justify-self: start
+              - type: custom:button-card
+                entity: sensor.mastertemperatuur_temperature
+                name: Master
+                custom_fields:
+                  hum: >-
+                    [[[ return states['sensor.mastertemperatuur_humidity'].state
+                    + '%' ]]]
+                aspect_ratio: 1/1
+                show_state: true
+                show_icon: true
+                styles:
+                  card:
+                    - background-color: '#161616'
+                    - border-radius: 20px
+                    - border: |
+                        [[[
+                          var temp = parseFloat(entity.state);
+                          if (temp <= 17) return '2px solid #00d4ff';
+                          if (temp > 22) return '2px solid #ff4d4d';
+                          return '1px solid #00ff96';
+                        ]]]
+                    - padding: 10%
+                  grid:
+                    - grid-template-areas: '"i hum" "s s" "n n"'
+                    - grid-template-columns: 1fr 1fr
+                    - grid-template-rows: 1fr min-content min-content
+                  icon:
+                    - width: 28px
+                    - color: |
+                        [[[
+                          var temp = parseFloat(entity.state);
+                          if (temp <= 17) return '#00d4ff';
+                          if (temp > 22) return '#ff4d4d';
+                          return '#00ff96';
+                        ]]]
+                  custom_fields:
+                    hum:
+                      - font-size: 10px
+                      - color: '#808080'
+                      - justify-self: end
+                      - align-self: start
+                  state:
+                    - font-size: 18px
+                    - font-weight: bold
+                    - color: '#e0e0e0'
+                    - justify-self: start
+                    - padding-top: 5px
+                  name:
+                    - font-size: 11px
+                    - color: '#999'
+                    - justify-self: start
+              - type: custom:button-card
+                entity: sensor.bijkeuken_sensor_temperature
+                name: Bijkeuken
+                aspect_ratio: 1/1
+                show_state: true
+                show_icon: true
+                styles:
+                  card:
+                    - background-color: '#161616'
+                    - border-radius: 20px
+                    - border: |
+                        [[[
+                          var temp = parseFloat(entity.state);
+                          if (temp <= 17) return '2px solid #00d4ff';
+                          if (temp > 22) return '2px solid #ff4d4d';
+                          return '1px solid #00ff96';
+                        ]]]
+                    - padding: 10%
+                  grid:
+                    - grid-template-areas: '"i hum" "s s" "n n"'
+                    - grid-template-columns: 1fr 1fr
+                    - grid-template-rows: 1fr min-content min-content
+                  icon:
+                    - width: 28px
+                    - color: |
+                        [[[
+                          var temp = parseFloat(entity.state);
+                          if (temp <= 17) return '#00d4ff';
+                          if (temp > 22) return '#ff4d4d';
+                          return '#00ff96';
+                        ]]]
+                  custom_fields:
+                    hum:
+                      - font-size: 10px
+                      - color: '#808080'
+                      - justify-self: end
+                      - align-self: start
+                  state:
+                    - font-size: 18px
+                    - font-weight: bold
+                    - color: '#e0e0e0'
+                    - justify-self: start
+                    - padding-top: 5px
+                  name:
+                    - font-size: 11px
+                    - color: '#999'
+                    - justify-self: start
+              - type: custom:button-card
+                entity: sensor.sensor_wc_beneden_temperature
+                name: WC Ben.
+                aspect_ratio: 1/1
+                show_state: true
+                show_icon: true
+                styles:
+                  card:
+                    - background-color: '#161616'
+                    - border-radius: 20px
+                    - border: |
+                        [[[
+                          var temp = parseFloat(entity.state);
+                          if (temp <= 17) return '2px solid #00d4ff';
+                          if (temp > 22) return '22px solid #ff4d4d';
+                          return '1px solid #00ff96';
+                        ]]]
+                    - padding: 10%
+                  grid:
+                    - grid-template-areas: '"i hum" "s s" "n n"'
+                    - grid-template-columns: 1fr 1fr
+                    - grid-template-rows: 1fr min-content min-content
+                  icon:
+                    - width: 28px
+                    - color: |
+                        [[[
+                          var temp = parseFloat(entity.state);
+                          if (temp <= 17) return '#00d4ff';
+                          if (temp > 22) return '#ff4d4d';
+                          return '#00ff96';
+                        ]]]
+                  custom_fields:
+                    hum:
+                      - font-size: 10px
+                      - color: '#808080'
+                      - justify-self: end
+                      - align-self: start
+                  state:
+                    - font-size: 18px
+                    - font-weight: bold
+                    - color: '#e0e0e0'
+                    - justify-self: start
+                    - padding-top: 5px
+                  name:
+                    - font-size: 11px
+                    - color: '#999'
+                    - justify-self: start
+              - type: custom:button-card
+                entity: sensor.sensor_wc_boven_temperature
+                name: WC Bov.
+                aspect_ratio: 1/1
+                show_state: true
+                show_icon: true
+                styles:
+                  card:
+                    - background-color: '#161616'
+                    - border-radius: 20px
+                    - border: |
+                        [[[
+                          var temp = parseFloat(entity.state);
+                          if (temp <= 17) return '2px solid #00d4ff';
+                          if (temp > 22) return '2px solid #ff4d4d';
+                          return '1px solid #00ff96';
+                        ]]]
+                    - padding: 10%
+                  grid:
+                    - grid-template-areas: '"i hum" "s s" "n n"'
+                    - grid-template-columns: 1fr 1fr
+                    - grid-template-rows: 1fr min-content min-content
+                  icon:
+                    - width: 28px
+                    - color: |
+                        [[[
+                          var temp = parseFloat(entity.state);
+                          if (temp <= 17) return '#00d4ff';
+                          if (temp > 22) return '#ff4d4d';
+                          return '#00ff96';
+                        ]]]
+                  custom_fields:
+                    hum:
+                      - font-size: 10px
+                      - color: '#808080'
+                      - justify-self: end
+                      - align-self: start
+                  state:
+                    - font-size: 18px
+                    - font-weight: bold
+                    - color: '#e0e0e0'
+                    - justify-self: start
+                    - padding-top: 5px
+                  name:
+                    - font-size: 11px
+                    - color: '#999'
+                    - justify-self: start
+              - type: custom:button-card
+                entity: sensor.overloop_kids_sensor_temperature
+                name: Overloop (K)
+                aspect_ratio: 1/1
+                show_state: true
+                show_icon: true
+                styles:
+                  card:
+                    - background-color: '#161616'
+                    - border-radius: 20px
+                    - border: |
+                        [[[
+                          var temp = parseFloat(entity.state);
+                          if (temp <= 17) return '2px solid #00d4ff';
+                          if (temp > 22) return '2px solid #ff4d4d';
+                          return '1px solid #00ff96';
+                        ]]]
+                    - padding: 10%
+                  grid:
+                    - grid-template-areas: '"i hum" "s s" "n n"'
+                    - grid-template-columns: 1fr 1fr
+                    - grid-template-rows: 1fr min-content min-content
+                  icon:
+                    - width: 28px
+                    - color: |
+                        [[[
+                          var temp = parseFloat(entity.state);
+                          if (temp <= 17) return '#00d4ff';
+                          if (temp > 22) return '#ff4d4d';
+                          return '#00ff96';
+                        ]]]
+                  custom_fields:
+                    hum:
+                      - font-size: 10px
+                      - color: '#808080'
+                      - justify-self: end
+                      - align-self: start
+                  state:
+                    - font-size: 18px
+                    - font-weight: bold
+                    - color: '#e0e0e0'
+                    - justify-self: start
+                    - padding-top: 5px
+                  name:
+                    - font-size: 11px
+                    - color: '#999'
+                    - justify-self: start
+              - type: custom:button-card
+                entity: sensor.overloop_sensor_master_temperature
+                name: Overloop (M)
+                aspect_ratio: 1/1
+                show_state: true
+                show_icon: true
+                styles:
+                  card:
+                    - background-color: '#161616'
+                    - border-radius: 20px
+                    - border: |
+                        [[[
+                          var temp = parseFloat(entity.state);
+                          if (temp <= 17) return '2px solid #00d4ff';
+                          if (temp > 22) return '2px solid #ff4d4d';
+                          return '1px solid #00ff96';
+                        ]]]
+                    - padding: 10%
+                  grid:
+                    - grid-template-areas: '"i hum" "s s" "n n"'
+                    - grid-template-columns: 1fr 1fr
+                    - grid-template-rows: 1fr min-content min-content
+                  icon:
+                    - width: 28px
+                    - color: |
+                        [[[
+                          var temp = parseFloat(entity.state);
+                          if (temp <= 17) return '#00d4ff';
+                          if (temp > 22) return '#ff4d4d';
+                          return '#00ff96';
+                        ]]]
+                  custom_fields:
+                    hum:
+                      - font-size: 10px
+                      - color: '#808080'
+                      - justify-self: end
+                      - align-self: start
+                  state:
+                    - font-size: 18px
+                    - font-weight: bold
+                    - color: '#e0e0e0'
+                    - justify-self: start
+                    - padding-top: 5px
+                  name:
+                    - font-size: 11px
+                    - color: '#999'
+                    - justify-self: start
+    cards: []
+  - title: Wellness & Water
+    path: wellness_water
+    type: sections
+    max_columns: 2
+    sections:
+      - cards:
+          - type: heading
+            heading: Jacuzzi
+          - square: false
+            type: grid
+            cards:
+              - type: custom:button-card
+                entity: sensor.spa_current_temperature
+                name: Spa Temp
+                aspect_ratio: 2/1
+                show_state: true
+                show_name: false
+                show_icon: false
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - background-color: rgba(22, 22, 22, 0.8)
+                    - border: |
+                        [[[
+                          var action = states['climate.spa_thermostat']?.attributes.hvac_action;
+                          return action == 'heating' ? '2px solid #ff4d4d' : '1px solid #00ff96';
+                        ]]]
+                  grid:
+                    - grid-template-areas: '"i heat" "s s" "n target"'
+                    - grid-template-columns: 1fr 1fr
+                    - grid-template-rows: 1fr 1fr min-content
+                  icon:
+                    - width: 28px
+                    - color: |
+                        [[[
+                          var action = states['climate.spa_thermostat']?.attributes.hvac_action;
+                          return action == 'heating' ? '#ff4d4d' : '#00ff96';
+                        ]]]
+                  state:
+                    - font-size: 18px
+                    - font-weight: bold
+                    - justify-self: start
+                    - padding-left: 15px
+                  name:
+                    - font-size: 11px
+                    - color: '#777'
+                    - justify-self: left
+                    - padding-left: 5px
+                  custom_fields:
+                    heat:
+                      - font-size: 9px
+                      - font-weight: bold
+                      - justify-self: end
+                      - padding-right: 15px
+                      - color: |
+                          [[[
+                            var action = states['climate.spa_thermostat']?.attributes.hvac_action;
+                            return action == 'heating' ? '#ff4d4d' : '#808080';
+                          ]]]
+                    target:
+                      - font-size: 10px
+                      - color: '#808080'
+                      - justify-self: end
+                      - padding-right: 15px
+                custom_fields:
+                  heat: |
+                    [[[
+                      var action = states['climate.spa_thermostat']?.attributes.hvac_action;
+                      return action == 'heating' ? 'VERWARMEN' : 'STANDBY';
+                    ]]]
+                  target: |
+                    [[[
+                      var raw_temp = parseFloat(states['sensor.spa_desired_temperature']?.state);
+                      var target = (Math.round(raw_temp * 2) / 2).toFixed(1).replace('.', ',');
+                      return "Doel: " + target + "°C";
+                    ]]]
+                tap_action:
+                  action: more-info
+                  entity: climate.spa_thermostat
+              - type: custom:button-card
+                entity: input_boolean.jacuzzi_onderhoud_status
+                name: Onderhoud
+                aspect_ratio: 2/1
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - background-color: rgba(22, 22, 22, 0.8)
+                    - border: >
+                        [[[ return entity.state == 'on' ? '1px solid #00ff96' :
+                        '2px solid #ff4d4d'; ]]]
+                  grid:
+                    - grid-template-areas: '"i n"'
+                    - grid-template-columns: 45px 1fr
+                  icon:
+                    - width: 30px
+                    - color: >
+                        [[[ return entity.state == 'on' ? '#00ff96' : '#ff4d4d';
+                        ]]]
+                  name:
+                    - justify-self: start
+                    - font-weight: 600
+                    - font-size: 12px
+                    - color: white
+                state:
+                  - value: 'on'
+                    icon: mdi:check-decagram
+                    name: OK
+                  - value: 'off'
+                    icon: mdi:alert-decagram
+                    name: Nodig
+            columns: 3
+          - square: false
+            type: grid
+            cards:
+              - type: custom:button-card
+                entity: switch.spa_pump_1
+                name: Jets 1
+                icon: mdi:weather-windy
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - background-color: rgba(22, 22, 22, 0.8)
+                    - border: >
+                        [[[ return entity.state == 'on' ? '2px solid #00d4ff' :
+                        '1px solid rgba(255,255,255,0.05)'; ]]]
+                  icon:
+                    - color: >
+                        [[[ return entity.state == 'on' ? '#00d4ff' : '#444444';
+                        ]]]
+                  name:
+                    - font-size: 11px
+                    - font-weight: 600
+                    - color: >
+                        [[[ return entity.state == 'on' ? 'white' : '#777777';
+                        ]]]
+              - type: custom:button-card
+                entity: switch.spa_pump_2
+                name: Jets 2
+                icon: mdi:weather-windy
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - background-color: rgba(22, 22, 22, 0.8)
+                    - border: >
+                        [[[ return entity.state == 'on' ? '2px solid #00d4ff' :
+                        '1px solid rgba(255,255,255,0.05)'; ]]]
+                  icon:
+                    - color: >
+                        [[[ return entity.state == 'on' ? '#00d4ff' : '#444444';
+                        ]]]
+                  name:
+                    - font-size: 11px
+                    - font-weight: 600
+                    - color: >
+                        [[[ return entity.state == 'on' ? 'white' : '#777777';
+                        ]]]
+              - type: custom:button-card
+                entity: switch.spa_pump_3
+                name: Jets 3
+                icon: mdi:weather-windy
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - background-color: rgba(22, 22, 22, 0.8)
+                    - border: >
+                        [[[ return entity.state == 'on' ? '2px solid #00d4ff' :
+                        '1px solid rgba(255,255,255,0.05)'; ]]]
+                  icon:
+                    - color: >
+                        [[[ return entity.state == 'on' ? '#00d4ff' : '#444444';
+                        ]]]
+                  name:
+                    - font-size: 11px
+                    - font-weight: 600
+                    - color: >
+                        [[[ return entity.state == 'on' ? 'white' : '#777777';
+                        ]]]
+            columns: 3
+          - square: false
+            type: grid
+            cards:
+              - type: custom:button-card
+                entity: switch.spa_light
+                name: Licht
+                icon: mdi:lightbulb
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - background-color: rgba(22, 22, 22, 0.8)
+                    - border: >
+                        [[[ return entity.state == 'on' ? '2px solid #ffea00' :
+                        '1px solid rgba(255,255,255,0.05)'; ]]]
+                  icon:
+                    - color: >
+                        [[[ return entity.state == 'on' ? '#ffea00' : '#444444';
+                        ]]]
+                  name:
+                    - font-size: 11px
+                    - font-weight: 600
+                    - color: >
+                        [[[ return entity.state == 'on' ? 'white' : '#777777';
+                        ]]]
+              - type: custom:button-card
+                entity: sensor.spa_ozone
+                name: Ozon
+                icon: mdi:weather-hazy
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - background-color: rgba(22, 22, 22, 0.8)
+                    - border: >
+                        [[[ return entity.state == 'on' ? '2px solid #00d4ff' :
+                        '1px solid rgba(255,255,255,0.05)'; ]]]
+                  icon:
+                    - color: '#00d4ff'
+                  name:
+                    - font-size: 11px
+                    - font-weight: 600
+                    - color: >
+                        [[[ return entity.state == 'on' ? 'white' : '#777777';
+                        ]]]
+            columns: 3
+          - type: heading
+            heading: Filter Cycli
+          - type: custom:button-card
+            name: Filter Programma
+            icon: mdi:filter-cog
+            styles:
+              card:
+                - border-radius: 12px
+                - background-color: rgba(22, 22, 22, 0.8)
+                - border: 1px solid rgba(255,255,255,0.05)
+                - padding: 15px
+              grid:
+                - grid-template-areas: '"i n" "info info"'
+                - grid-template-columns: 30px 1fr
+              name:
+                - justify-self: start
+                - font-weight: bold
+                - font-size: 14px
+              custom_fields:
+                info:
+                  - padding-top: 15px
+            custom_fields:
+              info: |
+                [[[
+                  var f1_stat = states['sensor.spa_filter_1']?.state == 'ON' ? '🟢' : '⚪';
+                  var f2_stat = states['sensor.spa_filter_2']?.state == 'ON' ? '🟢' : '⚪';
+                  var t1 = states['select.spa_filter_time_1']?.state;
+                  var d1 = states['select.spa_filter_duration_1']?.state;
+                  var t2 = states['select.spa_filter_time_2']?.state;
+                  var d2 = states['select.spa_filter_duration_2']?.state;
+                  
+                  return `
+                    <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12px; color: #999;">
+                      <div style="display: flex; justify-content: space-between;">
+                        <span>${f1_stat} Cyclus 1</span>
+                        <span>Start: <b>${t1}</b></span>
+                        <span>Duur: <b>${d1}</b></span>
+                      </div>
+                      <div style="display: flex; justify-content: space-between;">
+                        <span>${f2_stat} Cyclus 2</span>
+                        <span>Start: <b>${t2}</b></span>
+                        <span>Duur: <b>${d2}</b></span>
+                      </div>
+                    </div>
+                  `;
+                ]]]
+      - cards:
+          - type: heading
+            heading: Waterontharder
+            grid_options:
+              columns: 6
+              rows: 1
+          - type: grid
+            columns: 3
+            square: false
+            cards:
+              - type: custom:button-card
+                entity: input_boolean.waterontharder_zout_nodig
+                name: Zoutvoorraad
+                aspect_ratio: 2/1
+                styles:
+                  card:
+                    - border-radius: 12px
+                    - background-color: rgba(22, 22, 22, 0.8)
+                    - border: >
+                        [[[ return entity.state == 'off' ? '1px solid #00ff96' :
+                        '2px solid #ff4d4d'; ]]]
+                  grid:
+                    - grid-template-areas: '"i n"'
+                    - grid-template-columns: 45px 1fr
+                  icon:
+                    - width: 30px
+                    - color: >
+                        [[[ return entity.state == 'off' ? '#00ff96' :
+                        '#ff4d4d'; ]]]
+                  name:
+                    - justify-self: start
+                    - font-weight: 600
+                    - font-size: 12px
+                    - color: white
+                state:
+                  - value: 'off'
+                    icon: mdi:shaker
+                    name: Zoutniveau OK
+                  - value: 'on'
+                    icon: mdi:shaker-outline
+                    name: Zout bijvullen
+        column_span: 1
+title: Wall dashboard
